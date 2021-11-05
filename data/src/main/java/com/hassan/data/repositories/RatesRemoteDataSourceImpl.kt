@@ -25,4 +25,18 @@ class RatesRemoteDataSourceImpl(
                 return@withContext Result.Error(e)
             }
         }
+
+    override suspend fun convertRate(symbol: String): Result<LatestRates> =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = service.convertRate(symbols = symbol)
+                if (response.isSuccessful) {
+                    return@withContext Result.Success(mapper.toLatestRates(response.body()!!))
+                } else {
+                    return@withContext Result.Error(Exception(response.message()))
+                }
+            }catch (e: Exception) {
+                return@withContext Result.Error(e)
+            }
+        }
 }

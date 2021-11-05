@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CurrencyCalc</string>
+    <string name="app_name_colored">Currency Calculator<font color='red'>Hello world!</font></string>
 </resources>

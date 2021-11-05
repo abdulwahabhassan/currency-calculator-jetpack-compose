@@ -5,4 +5,5 @@ import com.hassan.domain.entities.LatestRates
 
 interface RatesRepository {
     suspend fun getRemoteRates(): Result<LatestRates>
+    suspend fun convertRate(symbol: String): Result<LatestRates>
 }

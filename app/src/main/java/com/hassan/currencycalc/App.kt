@@ -3,6 +3,7 @@ package com.hassan.currencycalc
 import android.app.Application
 import com.hassan.currencycalc.di.ServiceLocator
 import com.hassan.data.repositories.RatesRepositoryImpl
+import com.hassan.domain.usecases.ConvertRateUseCase
 import com.hassan.domain.usecases.GetRatesUseCase
 
 class App : Application() {
@@ -11,4 +12,7 @@ class App : Application() {
 
     val getRatesUseCase: GetRatesUseCase
         get() = GetRatesUseCase(ratesRepository)
+
+    val convertRateUseCase: ConvertRateUseCase
+        get() = ConvertRateUseCase(ratesRepository)
 }
