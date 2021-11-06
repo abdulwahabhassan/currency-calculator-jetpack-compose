@@ -8,9 +8,12 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -22,6 +25,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,8 +34,10 @@ import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.ViewModel
 import com.hassan.currencycalc.App
 import com.hassan.currencycalc.ui.theme.CurrencyCalcTheme
+import com.hassan.currencycalc.ui.theme.RippleCustomTheme
 import com.hassan.currencycalc.viewmodels.MainViewModel
 import com.hassan.currencycalc.viewmodels.MainViewModelFactory
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -92,16 +99,19 @@ fun MainActivityScreen(viewModel: ViewModel) {
                     }
                 },
                 actions = {
-                    TextButton(
-                        onClick = {
-                            /*TODO*/
+                    CompositionLocalProvider(LocalRippleTheme provides RippleCustomTheme) {
+                        TextButton(
+                            onClick = {
+                                /*TODO*/
+                            },
+                            shape = RoundedCornerShape(6.dp)
+                        ) {
+                            Text(
+                                text = "Sign up",
+                                color = MaterialTheme.colors.primaryVariant,
+                                style = MaterialTheme.typography.subtitle1
+                            )
                         }
-                    ) {
-                        Text(
-                            text = "Sign up",
-                            color = MaterialTheme.colors.primaryVariant,
-                            style = MaterialTheme.typography.subtitle1
-                        )
                     }
                 }
             )
@@ -119,14 +129,17 @@ fun MainActivityScreen(viewModel: ViewModel) {
 @Composable
 fun BodyContent(modifier: Modifier) {
     val scrollState = rememberScrollState()
+    var trailingText by rememberSaveable { mutableStateOf("PLN")}
+
     Column(modifier = modifier.verticalScroll(scrollState)) {
 
         Column(modifier = Modifier.padding(24.dp, 0.dp, 24.dp, 0.dp)) {
             AppName(modifier)
             Spacer(modifier = Modifier.height(40.dp))
-            EditText("EUR", modifier)
+            //Make the first EditText readOnly
+            EditText("EUR", modifier, readOnly = true, defaultValue = "1", enabled = false)
             Spacer(modifier = Modifier.height(16.dp))
-            EditText("PLN", modifier)
+            EditText( trailingText, modifier, readOnly = false, defaultValue = "", enabled = false)
             Spacer(modifier = Modifier.height(32.dp))
 
             Row(
@@ -136,14 +149,15 @@ fun BodyContent(modifier: Modifier) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween) {
 
-                DropDownEditText(modifier)
+                //disable the first DropDownEditText and make readOnly
+                DropDownEditText(modifier, readOnly = true, enabled = false, defaultSymbol = "EUR")
                 Icon(
                     imageVector = Icons.Filled.CompareArrows,
                     contentDescription = "Compare arrow",
                     modifier = Modifier.padding(8.dp),
                     tint = MaterialTheme.colors.onSecondary
                 )
-                DropDownEditText(modifier)
+                DropDownEditText(modifier, readOnly = false, enabled = true, defaultSymbol = "PLN")
 
             }
             Spacer(modifier = Modifier.height(32.dp))
@@ -153,7 +167,7 @@ fun BodyContent(modifier: Modifier) {
                 modifier = Modifier
                     .height(50.dp)
                     .fillMaxWidth(),
-                shape = RoundedCornerShape(5.dp),
+                shape = RoundedCornerShape(6.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.primaryVariant,
                     contentColor = MaterialTheme.colors.primary
@@ -163,24 +177,29 @@ fun BodyContent(modifier: Modifier) {
                 Text(text = "Convert", fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
             Spacer(modifier = Modifier.height(16.dp))
-            TextButton(onClick = { /*TODO*/ }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                Text(
-                    text = "Mid-market exchange rate at 13:38 UTC",
-                    color = MaterialTheme.colors.onPrimary,
-                    textDecoration = TextDecoration.Underline
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    imageVector = Icons.Filled.Info,
-                    contentDescription = "Info icon",
-                    modifier = Modifier.clip(CircleShape),
-                    tint = MaterialTheme.colors.onPrimary
-
-                )
-
+            CompositionLocalProvider(LocalRippleTheme provides RippleCustomTheme) {
+                TextButton(
+                    onClick = {  },
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    shape = RoundedCornerShape(6.dp)
+                ) {
+                    Text(
+                        text = "Mid-market exchange rate at 13:38 UTC",
+                        color = MaterialTheme.colors.onPrimary,
+                        textDecoration = TextDecoration.Underline
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        imageVector = Icons.Filled.Info,
+                        contentDescription = "Info icon",
+                        modifier = Modifier.clip(CircleShape),
+                        tint = MaterialTheme.colors.onPrimary
+                    )
+                }
             }
-        }
 
+        }
+        Spacer(modifier = Modifier.height(32.dp))
         GraphSection()
     }
 
@@ -191,24 +210,41 @@ fun BodyContent(modifier: Modifier) {
 fun GraphSection() {
     Column(
         modifier = Modifier
-            .height(500.dp)
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colors.onPrimary,
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             )
     ) {
+        Spacer(modifier = Modifier.height(420.dp))
+        TextButton(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            shape = RoundedCornerShape(6.dp)
+        ) {
+            Text(
+                text = "Get rate alerts straight to your email inbox",
+                color = MaterialTheme.colors.primary,
+                textDecoration = TextDecoration.Underline
+            )
+        }
+        Spacer(modifier = Modifier.height(24.dp))
 
     }
 }
 
 @Composable
-fun DropDownEditText(modifier: Modifier) {
+fun DropDownEditText(
+    modifier: Modifier,
+    readOnly: Boolean,
+    enabled: Boolean,
+    defaultSymbol: String
+) {
 
     var textFieldSize by remember { mutableStateOf(Size.Zero)}
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     val symbols = arrayListOf<String>("NGN", "MXN", "GBP", "USD")
-    var selectedSymbol by rememberSaveable {mutableStateOf("")}
+    var selectedSymbol by rememberSaveable {mutableStateOf(defaultSymbol)}
 
     Box {
         OutlinedTextField(
@@ -223,16 +259,20 @@ fun DropDownEditText(modifier: Modifier) {
                     //This allows the dropdown menu to take the same width as the OutlinedTextField
                     textFieldSize = coordinates.size.toSize()
                 },
-            value = "",
+            readOnly = readOnly,
+            value = selectedSymbol,
+            textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.SemiBold),
             singleLine = true,
-            onValueChange = {},
+            onValueChange = { newInput ->
+                selectedSymbol = newInput
+            },
             trailingIcon = {
                 Icon(
                     imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                     contentDescription = if (isExpanded) "Show less" else "Show more",
                     Modifier
                         .clip(CircleShape)
-                        .clickable { isExpanded = !isExpanded },
+                        .clickable(enabled = enabled) { isExpanded = !isExpanded },
                     tint = MaterialTheme.colors.onSecondary
                 )
             },
@@ -240,8 +280,10 @@ fun DropDownEditText(modifier: Modifier) {
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
-                cursorColor = MaterialTheme.colors.onSecondary
-            )
+                cursorColor = MaterialTheme.colors.onSecondary,
+                textColor = Color.DarkGray
+            ),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters)
         )
         DropdownMenu(
             expanded = isExpanded,
@@ -259,7 +301,7 @@ fun DropDownEditText(modifier: Modifier) {
                     }
                 ) {
 //                    Icon(imageVector = , contentDescription = )
-                    Text(text = symbol, fontWeight = FontWeight.Normal, fontSize = 14.sp)
+                    Text(text = symbol, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                 }
             }
         }
@@ -267,29 +309,40 @@ fun DropDownEditText(modifier: Modifier) {
 }
 
 @Composable
-fun EditText(text: String, modifier: Modifier) {
+fun EditText(
+    trailingText: String,
+    modifier: Modifier,
+    readOnly: Boolean,
+    defaultValue: String,
+    enabled: Boolean
+) {
+    var value by rememberSaveable { mutableStateOf(defaultValue)}
+
     TextField(
-        value = "",
+        value = value,
+        readOnly = readOnly,
+        enabled = enabled,
         onValueChange = {},
         modifier = modifier.fillMaxWidth(),
         singleLine = true,
         trailingIcon = {
             Text(
-                text = text,
+                text = trailingText,
                 color = MaterialTheme.colors.secondaryVariant,
                 fontWeight = FontWeight.Bold
             )
         },
-        shape = RoundedCornerShape(5.dp),
+        shape = RoundedCornerShape(6.dp),
         colors = TextFieldDefaults.textFieldColors(
-            textColor = MaterialTheme.colors.onSecondary,
+            textColor = Color.DarkGray,
             backgroundColor = MaterialTheme.colors.secondary,
-            disabledTextColor = Color.Transparent,
+            disabledTextColor = Color.DarkGray,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
             cursorColor = MaterialTheme.colors.onSecondary
-        )
+        ),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
     )
 }
 
