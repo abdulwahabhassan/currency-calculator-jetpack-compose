@@ -1,6 +1,8 @@
 package com.hassan.currencycalc.ui.views
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -8,7 +10,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -21,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
@@ -32,12 +35,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.ViewModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.hassan.currencycalc.App
 import com.hassan.currencycalc.ui.theme.CurrencyCalcTheme
 import com.hassan.currencycalc.ui.theme.RippleCustomTheme
 import com.hassan.currencycalc.viewmodels.MainViewModel
 import com.hassan.currencycalc.viewmodels.MainViewModelFactory
+import com.hassan.domain.entities.Country
+import java.io.IOException
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -51,11 +59,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
         setContent {
             CurrencyCalcTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    MainActivityScreen(viewModel = mainViewModel)
+
+                    val mapOfCurrencySymbolsToFlag = mutableMapOf<String, String>()
+                    loadJsonFromAsset()?.forEach {
+                        mapOfCurrencySymbolsToFlag[it.currency.code] = it.flag
+                    }
+                    MainActivityScreen(viewModel = mainViewModel, mapOfCurrencySymbolsToFlag)
                 }
             }
         }
@@ -73,11 +88,41 @@ class MainActivity : AppCompatActivity() {
 //        )
 
     }
+
+    private fun loadJsonFromAsset(): List<Country>? {
+
+        val listOfCountries: List<Country>?
+
+        try {
+            //use InputStream to open the file and stream the data into it.
+            val stream = assets.open("flags.json")
+            //create a variable to store the size of the file.
+            val size = stream.available()
+            //create a buffer of the size of the file.
+            val buffer = ByteArray(size)
+            //read the inputStream file into the buffer.
+            stream.read(buffer)
+            //close the inputStream file.
+            stream.close()
+            //convert the buffer file to the format in which you need your data.
+            val stringJson = String(buffer, charset("UTF-8"))
+            val gson = Gson()
+            val customListType = object : TypeToken<List<Country>>() {}.type //custom list type
+            listOfCountries = gson.fromJson(stringJson, customListType)
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        }
+
+        Log.d("JsonTester", "$listOfCountries")
+        return listOfCountries
+    }
 }
 
 
 @Composable
-fun MainActivityScreen(viewModel: ViewModel) {
+fun MainActivityScreen(viewModel: ViewModel, mapOfCurrencySymbolsToFlag: MutableMap<String, String>) {
 
     Scaffold(
         topBar = {
@@ -116,18 +161,11 @@ fun MainActivityScreen(viewModel: ViewModel) {
                 }
             )
         }
-    ) { innerPadding ->
-        BodyContent(
-            Modifier
-                .padding(innerPadding)
-
-        )
-    }
-
+    ) { innerPadding -> BodyContent(Modifier.padding(innerPadding), mapOfCurrencySymbolsToFlag) }
 }
 
 @Composable
-fun BodyContent(modifier: Modifier) {
+fun BodyContent(modifier: Modifier, mapOfCurrencySymbolsToFlag: MutableMap<String, String>) {
     val scrollState = rememberScrollState()
     var trailingText by rememberSaveable { mutableStateOf("PLN")}
 
@@ -150,14 +188,26 @@ fun BodyContent(modifier: Modifier) {
                 horizontalArrangement = Arrangement.SpaceBetween) {
 
                 //disable the first DropDownEditText and make readOnly
-                DropDownEditText(modifier, readOnly = true, enabled = false, defaultSymbol = "EUR")
+                DropDownEditText(
+                    modifier,
+                    readOnly = true,
+                    enabled = false,
+                    defaultSymbol = "NGN",
+                    mapOfCurrencySymbolsToFlag
+                )
                 Icon(
                     imageVector = Icons.Filled.CompareArrows,
                     contentDescription = "Compare arrow",
                     modifier = Modifier.padding(8.dp),
                     tint = MaterialTheme.colors.onSecondary
                 )
-                DropDownEditText(modifier, readOnly = false, enabled = true, defaultSymbol = "PLN")
+                DropDownEditText(
+                    modifier,
+                    readOnly = false,
+                    enabled = true,
+                    defaultSymbol = "PLN",
+                    mapOfCurrencySymbolsToFlag
+                )
 
             }
             Spacer(modifier = Modifier.height(32.dp))
@@ -203,7 +253,6 @@ fun BodyContent(modifier: Modifier) {
         GraphSection()
     }
 
-
 }
 
 @Composable
@@ -229,7 +278,6 @@ fun GraphSection() {
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
-
     }
 }
 
@@ -238,13 +286,14 @@ fun DropDownEditText(
     modifier: Modifier,
     readOnly: Boolean,
     enabled: Boolean,
-    defaultSymbol: String
+    defaultSymbol: String,
+    mapOfCurrencySymbolsToFlag: MutableMap<String, String>
 ) {
 
     var textFieldSize by remember { mutableStateOf(Size.Zero)}
     var isExpanded by rememberSaveable { mutableStateOf(false) }
-    val symbols = arrayListOf<String>("NGN", "MXN", "GBP", "USD")
     var selectedSymbol by rememberSaveable {mutableStateOf(defaultSymbol)}
+//    val flagKey = selectedSymbol.substring(0, 2).lowercase(Locale.getDefault())
 
     Box {
         OutlinedTextField(
@@ -261,6 +310,16 @@ fun DropDownEditText(
                 },
             readOnly = readOnly,
             value = selectedSymbol,
+            leadingIcon = {
+                val base64String = mapOfCurrencySymbolsToFlag[selectedSymbol]
+                    if (base64String != null) {
+                        Icon(
+                            bitmap = getFlagImageBitMap(base64String),
+                            contentDescription = "Flag",
+                            tint = Color.Unspecified
+                        )
+                    }
+            },
             textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.SemiBold),
             singleLine = true,
             onValueChange = { newInput ->
@@ -293,19 +352,36 @@ fun DropDownEditText(
                     //width of the DropDrownMenu to be the same as the OutlinedTextField
                 .width(with(LocalDensity.current){textFieldSize.width.toDp()}),
         ) {
-            symbols.forEach { symbol ->
+            mapOfCurrencySymbolsToFlag.forEach { item ->
                 DropdownMenuItem(
                     onClick = {
-                        selectedSymbol = symbol
+                        selectedSymbol = item.key
                         isExpanded = false
                     }
                 ) {
-//                    Icon(imageVector = , contentDescription = )
-                    Text(text = symbol, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                    Icon(
+                        bitmap = getFlagImageBitMap(item.value),
+                        contentDescription ="Flag",
+                        tint = Color.Unspecified
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = item.key, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                 }
             }
         }
     }
+}
+
+//Decode base64 string to image bitmap
+fun getFlagImageBitMap(base64String: String): ImageBitmap {
+    var encodedString = base64String
+    if(encodedString.contains(",")) {
+        encodedString = encodedString.split(",")[1]
+    }
+    val decodedByteArray = Base64.getDecoder()
+        .decode(encodedString.toByteArray(charset("UTF-8")))
+    val bitMap = BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.size)
+    return bitMap.asImageBitmap()
 }
 
 @Composable
