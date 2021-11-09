@@ -59,8 +59,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
         setContent {
             CurrencyCalcTheme {
                 // A surface container using the 'background' color from the theme
@@ -68,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
                     val mapOfCurrencySymbolsToFlag = mutableMapOf<String, String>()
                     loadJsonFromAsset()?.forEach {
-                        mapOfCurrencySymbolsToFlag[it.currency.code] = it.flag
+                        mapOfCurrencySymbolsToFlag[it.currency.code + it.isoAlpha3] = it.flag
                     }
                     MainActivityScreen(viewModel = mainViewModel, mapOfCurrencySymbolsToFlag)
                 }
@@ -192,8 +190,9 @@ fun BodyContent(modifier: Modifier, mapOfCurrencySymbolsToFlag: MutableMap<Strin
                     modifier,
                     readOnly = true,
                     enabled = false,
-                    defaultSymbol = "NGN",
-                    mapOfCurrencySymbolsToFlag
+                    defaultSymbol = "EURDEU",
+                    mapOfCurrencySymbolsToFlag,
+                    onSymbolSelected = { newText -> trailingText = newText }
                 )
                 Icon(
                     imageVector = Icons.Filled.CompareArrows,
@@ -205,15 +204,18 @@ fun BodyContent(modifier: Modifier, mapOfCurrencySymbolsToFlag: MutableMap<Strin
                     modifier,
                     readOnly = false,
                     enabled = true,
-                    defaultSymbol = "PLN",
-                    mapOfCurrencySymbolsToFlag
+                    defaultSymbol = "PLNPOL",
+                    mapOfCurrencySymbolsToFlag,
+                    onSymbolSelected = { newText -> trailingText = newText }
                 )
 
             }
             Spacer(modifier = Modifier.height(32.dp))
             Button(
                 elevation = null,
-                onClick = { /*TODO*/ },
+                onClick = {
+
+                },
                 modifier = Modifier
                     .height(50.dp)
                     .fillMaxWidth(),
@@ -287,13 +289,13 @@ fun DropDownEditText(
     readOnly: Boolean,
     enabled: Boolean,
     defaultSymbol: String,
-    mapOfCurrencySymbolsToFlag: MutableMap<String, String>
+    mapOfCurrencySymbolsToFlag: MutableMap<String, String>,
+    onSymbolSelected: (String) -> Unit
 ) {
 
     var textFieldSize by remember { mutableStateOf(Size.Zero)}
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     var selectedSymbol by rememberSaveable {mutableStateOf(defaultSymbol)}
-//    val flagKey = selectedSymbol.substring(0, 2).lowercase(Locale.getDefault())
 
     Box {
         OutlinedTextField(
@@ -309,11 +311,14 @@ fun DropDownEditText(
                     textFieldSize = coordinates.size.toSize()
                 },
             readOnly = readOnly,
-            value = selectedSymbol,
+            value = if (selectedSymbol.length > 3) selectedSymbol.substring(0, 3) else selectedSymbol,
+            //to prevent a STRING INDEX OUT OF BOUND EXCEPTION when string is less than 3 while being
+            //update
             leadingIcon = {
                 val base64String = mapOfCurrencySymbolsToFlag[selectedSymbol]
                     if (base64String != null) {
                         Icon(
+                            modifier = Modifier.size(20.dp),
                             bitmap = getFlagImageBitMap(base64String),
                             contentDescription = "Flag",
                             tint = Color.Unspecified
@@ -350,22 +355,24 @@ fun DropDownEditText(
             modifier = modifier
                     //This is where I used the coordinates from the OutlinedTextField to specify the
                     //width of the DropDrownMenu to be the same as the OutlinedTextField
-                .width(with(LocalDensity.current){textFieldSize.width.toDp()}),
+                .width(with(LocalDensity.current){textFieldSize.width.toDp()}).height(250.dp)
         ) {
             mapOfCurrencySymbolsToFlag.forEach { item ->
                 DropdownMenuItem(
                     onClick = {
                         selectedSymbol = item.key
+                        onSymbolSelected(item.key.substring(0, 3))
                         isExpanded = false
                     }
                 ) {
                     Icon(
+                        modifier = Modifier.size(20.dp),
                         bitmap = getFlagImageBitMap(item.value),
                         contentDescription ="Flag",
                         tint = Color.Unspecified
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = item.key, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                    Text(text = item.key.substring(0, 3), fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                 }
             }
         }
