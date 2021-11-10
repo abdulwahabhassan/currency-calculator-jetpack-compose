@@ -1,9 +1,9 @@
 package com.hassan.domain.entities
 
 data class LatestRates(
-    val success: Boolean?,
-    val timestamp: Long?,
-    val base: String?,
-    val date: String?,
-    val rates: Map<String, Double>?
+    val success: Boolean? = null,
+    val timestamp: Long? = null,
+    val base: String? = null,
+    val date: String? = null,
+    val rates: Map<String, Double>? = null
 )
