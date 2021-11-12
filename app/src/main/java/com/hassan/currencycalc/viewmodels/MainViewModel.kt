@@ -59,6 +59,7 @@ class MainViewModel(
             when (val ratesResult = getHistoricalRatesUseCase.invoke(date, base, symbols)) {
                 is Result.Success -> {
                     _historicalRates.postValue(ratesResult.data)
+
                 }
 
                 is Result.Error -> {

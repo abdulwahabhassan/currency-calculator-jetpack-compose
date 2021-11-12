@@ -4,7 +4,7 @@ import com.hassan.data.api.RatesApiResponse
 import com.hassan.domain.entities.Rates
 
 class RatesApiResponseMapper {
-    fun toLatestRates(response: RatesApiResponse): Rates {
+    fun toRates(response: RatesApiResponse): Rates {
         return Rates(
             response.success,
             response.timestamp,

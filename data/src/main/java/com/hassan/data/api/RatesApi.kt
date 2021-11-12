@@ -9,19 +9,19 @@ interface RatesApi {
 
     @GET("latest")
     suspend fun convertRate(
-        @Query("base") base: String = "EUR",
+        @Query("base") base: String,
         @Query("symbols") symbols: String
     ) : Response<RatesApiResponse>
 
     @GET("latest")
     suspend fun getLatestRates(
-        @Query("base") base: String = "EUR"
+        @Query("base") base: String
     ) : Response<RatesApiResponse>
 
-    @GET("latest/{date}")
+    @GET("{date}")
     suspend fun getHistoricalRates(
         @Path("date") date: String,
-        @Query("base") base: String = "EUR",
+        @Query("base") base: String,
         @Query("symbols") symbols: String
     ): Response<RatesApiResponse>
 }

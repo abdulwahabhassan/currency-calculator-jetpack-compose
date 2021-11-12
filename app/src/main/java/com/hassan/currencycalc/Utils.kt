@@ -13,7 +13,8 @@ import com.google.gson.reflect.TypeToken
 import com.hassan.domain.entities.Country
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.*
 
 object Utils {
@@ -62,6 +63,7 @@ object Utils {
     //Decode base64 string to image bitmap
     fun getFlagImageBitMap(base64String: String): ImageBitmap {
         var encodedString = base64String
+        //remove the image description part of the string
         if(encodedString.contains(",")) {
             encodedString = encodedString.split(",")[1]
         }
@@ -72,13 +74,13 @@ object Utils {
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun calculatePastDate(daysAgo: Int): String {
-        //get current time and format it
-        val currentDate = SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().time).toLong()
-        var pastDate = (currentDate - daysAgo).toString()
-        while (pastDate.length < 8) {
-            pastDate += "0"
-        }
-        return pastDate
+    //Get date for number of days ago
+    fun calculatePastDate(daysAgo: Long): String {
+        //get zone id of specific region
+        val zoneId = ZoneId.of("Africa/Lagos")
+        //get today's date
+        val today = LocalDate.now(zoneId)
+        //subtract number of days ago and return as string
+        return today.minusDays(daysAgo).toString()
     }
 }

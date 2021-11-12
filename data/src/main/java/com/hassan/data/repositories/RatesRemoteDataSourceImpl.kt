@@ -15,9 +15,9 @@ class RatesRemoteDataSourceImpl(
     override suspend fun getLatestRates(base: String): Result<Rates> =
         withContext(Dispatchers.IO) {
             try {
-                val response = service.getLatestRates()
+                val response = service.getLatestRates(base)
                 if (response.isSuccessful) {
-                    return@withContext Result.Success(mapper.toLatestRates(response.body()!!))
+                    return@withContext Result.Success(mapper.toRates(response.body()!!))
                 } else {
                     return@withContext Result.Error(Exception(response.message()))
                 }
@@ -31,7 +31,7 @@ class RatesRemoteDataSourceImpl(
             try {
                 val response = service.convertRate(base = base, symbols = symbols)
                 if (response.isSuccessful) {
-                    return@withContext Result.Success(mapper.toLatestRates(response.body()!!))
+                    return@withContext Result.Success(mapper.toRates(response.body()!!))
                 } else {
                     return@withContext Result.Error(Exception(response.message()))
                 }
@@ -40,12 +40,12 @@ class RatesRemoteDataSourceImpl(
             }
         }
 
-    override suspend fun getHistoricalRates(base: String, symbols: String, date: String): Result<Rates> =
+    override suspend fun getHistoricalRates(date: String, base: String, symbols: String): Result<Rates> =
         withContext(Dispatchers.IO) {
         try {
             val response = service.getHistoricalRates(date = date, base = base, symbols = symbols)
             if (response.isSuccessful) {
-                return@withContext Result.Success(mapper.toLatestRates(response.body()!!))
+                return@withContext Result.Success(mapper.toRates(response.body()!!))
             } else {
                 return@withContext Result.Error(Exception(response.message()))
             }

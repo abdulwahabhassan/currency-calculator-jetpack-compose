@@ -2,17 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hassan.currencycalc">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CurrencyCalc">
+        android:theme="@style/Theme.CurrencyCalc"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ui.views.ChartActivity"
+            android:exported="true">
+
+        </activity>
         <activity
             android:name=".ui.views.MainActivity"
             android:exported="true"

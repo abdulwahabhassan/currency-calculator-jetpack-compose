@@ -254,10 +254,9 @@ fun BodyContent(
 @Composable
 fun GraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
 
-
-    val latestRates by mainViewModel.historicalRates.observeAsState(Rates())
-    val date by rememberSaveable { mutableStateOf("2021-01-23") }
+    val date by rememberSaveable { mutableStateOf("2019-03-16") }
     mainViewModel.getHistoricalRates(date, base, symbols)
+    val rates by mainViewModel.historicalRates.observeAsState(Rates())
 
     Column(
         modifier = Modifier
@@ -268,28 +267,10 @@ fun GraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
             )
     ) {
 
-        Text(text = "$latestRates", color = Color.White)
-
-        Canvas(modifier = Modifier.size(420.dp)) {
-            val canvasWidth = size.width
-            val canvasHeight = size.height
-
-            drawLine(
-                start = Offset(
-                    x = canvasWidth,
-                    y = 0f
-            ),
-                end = Offset(
-                    x = 0f,
-                    y = canvasHeight
-                ),
-                color = Color.Black,
-                strokeWidth = 2f
-            )
-        }
+//        Text(text = "$rates", color = Color.White)
         Spacer(modifier = Modifier.height(420.dp))
         TextButton(
-            onClick = { /*TODO*/ },
+            onClick = {  },
             modifier = Modifier.align(Alignment.CenterHorizontally),
             shape = RoundedCornerShape(6.dp)
         ) {

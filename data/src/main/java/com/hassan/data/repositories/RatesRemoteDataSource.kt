@@ -9,5 +9,5 @@ interface RatesRemoteDataSource {
 
     suspend fun convertRate(base: String, symbols: String): Result<Rates>
 
-    suspend fun getHistoricalRates(base: String, symbols: String, date: String): Result<Rates>
+    suspend fun getHistoricalRates(date: String, base: String, symbols: String): Result<Rates>
 }
