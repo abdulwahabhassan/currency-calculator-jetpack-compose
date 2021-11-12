@@ -1,5 +1,6 @@
 package com.hassan.currencycalc
 
+import android.annotation.SuppressLint
 import android.content.res.AssetManager
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -12,6 +13,7 @@ import com.google.gson.reflect.TypeToken
 import com.hassan.domain.entities.Country
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 
 object Utils {
@@ -67,5 +69,16 @@ object Utils {
             .decode(encodedString.toByteArray(charset("UTF-8")))
         val bitMap = BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.size)
         return bitMap.asImageBitmap()
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun calculatePastDate(daysAgo: Int): String {
+        //get current time and format it
+        val currentDate = SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().time).toLong()
+        var pastDate = (currentDate - daysAgo).toString()
+        while (pastDate.length < 8) {
+            pastDate += "0"
+        }
+        return pastDate
     }
 }

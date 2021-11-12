@@ -1,30 +1,34 @@
 package com.hassan.currencycalc.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.hassan.domain.Result
-import com.hassan.domain.entities.LatestRates
+import com.hassan.domain.entities.Rates
 import com.hassan.domain.usecases.ConvertRateUseCase
+import com.hassan.domain.usecases.GetHistoricalRatesUseCase
 import com.hassan.domain.usecases.GetRatesUseCase
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val getRatesUseCases: GetRatesUseCase,
-    private val convertRateUseCase: ConvertRateUseCase
+    private val getRatesUseCase: GetRatesUseCase,
+    private val convertRateUseCase: ConvertRateUseCase,
+    private val getHistoricalRatesUseCase: GetHistoricalRatesUseCase
 ) : ViewModel() {
 
-    private val _remoteRates = MutableLiveData<LatestRates>()
+    private val _remoteRates = MutableLiveData<Rates>()
     val remoteRates = _remoteRates
 
-    private val _convertedRate = MutableLiveData<LatestRates>()
+    private val _convertedRate = MutableLiveData<Rates>()
     val convertedRate = _convertedRate
+
+    private val _historicalRates = MutableLiveData<Rates>()
+    val historicalRates = _historicalRates
 
     private val _error = MutableLiveData<String>(null)
     val error: LiveData<String> = _error
 
-    fun getRates() {
+    fun getRates(base: String) {
         viewModelScope.launch {
-            when (val ratesResult = getRatesUseCases.invoke()) {
+            when (val ratesResult = getRatesUseCase.invoke(base)) {
                 is Result.Success -> {
                     _remoteRates.postValue(ratesResult.data)
                 }
@@ -36,11 +40,25 @@ class MainViewModel(
         }
     }
 
-    fun convertRate(symbols: String) {
+    fun convertRate(base: String, symbols: String) {
         viewModelScope.launch {
-            when (val ratesResult = convertRateUseCase.invoke(symbols)) {
+            when (val ratesResult = convertRateUseCase.invoke(base, symbols)) {
                 is Result.Success -> {
                     _convertedRate.postValue(ratesResult.data)
+                }
+
+                is Result.Error -> {
+                    _error.postValue(ratesResult.exception.message)
+                }
+            }
+        }
+    }
+
+    fun getHistoricalRates(date: String, base: String, symbols: String) {
+        viewModelScope.launch {
+            when (val ratesResult = getHistoricalRatesUseCase.invoke(date, base, symbols)) {
+                is Result.Success -> {
+                    _historicalRates.postValue(ratesResult.data)
                 }
 
                 is Result.Error -> {

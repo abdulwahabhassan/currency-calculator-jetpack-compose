@@ -1,5 +1,6 @@
 package com.hassan.currencycalc.ui.views
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -19,6 +20,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -37,7 +39,10 @@ import com.hassan.currencycalc.ui.theme.CurrencyCalcTheme
 import com.hassan.currencycalc.ui.theme.RippleCustomTheme
 import com.hassan.currencycalc.viewmodels.MainViewModel
 import com.hassan.currencycalc.viewmodels.MainViewModelFactory
-import com.hassan.domain.entities.LatestRates
+import com.hassan.domain.entities.Rates
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -45,7 +50,8 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModelFactory(
             (this.application as App).getRatesUseCase,
-            (this.application as App).convertRateUseCase
+            (this.application as App).convertRateUseCase,
+            (this.application as App).getHistoricalRatesUseCase
         )
     }
 
@@ -70,18 +76,8 @@ class MainActivity : AppCompatActivity() {
 //            Log.i("remote rates", "$it")
 //        }
 //        )
-//
-//        mainViewModel.convertRate("PLN")
-//        mainViewModel.convertedRate.observe(this, {
-//            Log.i("remote rates converted", "$it")
-//        }
-//        )
-
-
-
     }
 }
-
 
 @Composable
 fun MainActivityScreen(
@@ -142,8 +138,9 @@ fun BodyContent(
     mainViewModel: MainViewModel
 ) {
     val scrollState = rememberScrollState()
-    var trailingText by rememberSaveable { mutableStateOf("PLN")}
-    val convertedRate by mainViewModel.convertedRate.observeAsState(LatestRates())
+    var firstEditTextTrailingText by rememberSaveable { mutableStateOf("EUR")}
+    var secondEditTextTrailingText by rememberSaveable { mutableStateOf("PLN")}
+    val convertedRate by mainViewModel.convertedRate.observeAsState(Rates())
 
     Column(modifier = modifier.verticalScroll(scrollState)) {
 
@@ -152,7 +149,7 @@ fun BodyContent(
             Spacer(modifier = Modifier.height(40.dp))
             //Make the first EditText readOnly
             EditText(
-                "EUR",
+                firstEditTextTrailingText,
                 modifier,
                 readOnly = true,
                 value = "1",
@@ -160,11 +157,11 @@ fun BodyContent(
             )
             Spacer(modifier = Modifier.height(16.dp))
             EditText(
-                trailingText,
+                secondEditTextTrailingText,
                 modifier,
                 readOnly = false,
-                value = if (convertedRate.rates?.get(trailingText) != null)
-                    convertedRate.rates?.get(trailingText).toString() else "" ,
+                value = if (convertedRate.rates?.get(secondEditTextTrailingText) != null)
+                    convertedRate.rates?.get(secondEditTextTrailingText).toString() else "" ,
                 enabled = false
             )
             Spacer(modifier = Modifier.height(32.dp))
@@ -184,7 +181,7 @@ fun BodyContent(
                     enabled = false,
                     defaultSymbol = "EUR",
                     mapOfCurrencySymbolsToFlag,
-                    onSymbolSelected = { newText -> trailingText = newText }
+                    onSymbolSelected = { newText -> firstEditTextTrailingText = newText }
                 )
                 Icon(
                     imageVector = Icons.Filled.CompareArrows,
@@ -198,7 +195,7 @@ fun BodyContent(
                     enabled = true,
                     defaultSymbol = "PLN",
                     mapOfCurrencySymbolsToFlag,
-                    onSymbolSelected = { newText -> trailingText = newText }
+                    onSymbolSelected = { newText -> secondEditTextTrailingText = newText }
                 )
 
             }
@@ -208,7 +205,7 @@ fun BodyContent(
             Button(
                 elevation = null,
                 onClick = {
-                    mainViewModel.convertRate(trailingText)
+                    mainViewModel.convertRate(firstEditTextTrailingText, secondEditTextTrailingText)
                 },
                 modifier = Modifier
                     .height(50.dp)
@@ -248,13 +245,20 @@ fun BodyContent(
 
         }
         Spacer(modifier = Modifier.height(32.dp))
-        GraphSection()
+        GraphSection(mainViewModel, firstEditTextTrailingText, secondEditTextTrailingText)
     }
 
 }
 
+
 @Composable
-fun GraphSection() {
+fun GraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
+
+
+    val latestRates by mainViewModel.historicalRates.observeAsState(Rates())
+    val date by rememberSaveable { mutableStateOf("2021-01-23") }
+    mainViewModel.getHistoricalRates(date, base, symbols)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -263,6 +267,26 @@ fun GraphSection() {
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             )
     ) {
+
+        Text(text = "$latestRates", color = Color.White)
+
+        Canvas(modifier = Modifier.size(420.dp)) {
+            val canvasWidth = size.width
+            val canvasHeight = size.height
+
+            drawLine(
+                start = Offset(
+                    x = canvasWidth,
+                    y = 0f
+            ),
+                end = Offset(
+                    x = 0f,
+                    y = canvasHeight
+                ),
+                color = Color.Black,
+                strokeWidth = 2f
+            )
+        }
         Spacer(modifier = Modifier.height(420.dp))
         TextButton(
             onClick = { /*TODO*/ },
@@ -278,6 +302,7 @@ fun GraphSection() {
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
+
 
 @Composable
 fun DropDownEditText(

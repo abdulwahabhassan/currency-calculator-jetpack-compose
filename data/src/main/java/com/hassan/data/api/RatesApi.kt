@@ -2,6 +2,7 @@ package com.hassan.data.api
 
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface RatesApi {
@@ -9,9 +10,18 @@ interface RatesApi {
     @GET("latest")
     suspend fun convertRate(
         @Query("base") base: String = "EUR",
-        @Query("symbols") symbols: String) : Response<RatesApiResponse>
+        @Query("symbols") symbols: String
+    ) : Response<RatesApiResponse>
 
     @GET("latest")
     suspend fun getLatestRates(
-        @Query("base") base: String = "EUR") : Response<RatesApiResponse>
+        @Query("base") base: String = "EUR"
+    ) : Response<RatesApiResponse>
+
+    @GET("latest/{date}")
+    suspend fun getHistoricalRates(
+        @Path("date") date: String,
+        @Query("base") base: String = "EUR",
+        @Query("symbols") symbols: String
+    ): Response<RatesApiResponse>
 }

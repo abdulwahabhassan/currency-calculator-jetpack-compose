@@ -7,6 +7,8 @@ data class RatesApiResponse (
     var success: Boolean?,
     @SerializedName("timestamp")
     var timestamp: Long?,
+    @SerializedName("historical")
+    var historical: Boolean?,
     @SerializedName("base")
     var base: String?,
     @SerializedName("date")

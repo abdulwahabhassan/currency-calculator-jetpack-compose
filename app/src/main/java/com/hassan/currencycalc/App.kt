@@ -4,6 +4,7 @@ import android.app.Application
 import com.hassan.currencycalc.di.ServiceLocator
 import com.hassan.data.repositories.RatesRepositoryImpl
 import com.hassan.domain.usecases.ConvertRateUseCase
+import com.hassan.domain.usecases.GetHistoricalRatesUseCase
 import com.hassan.domain.usecases.GetRatesUseCase
 
 class App : Application() {
@@ -15,4 +16,7 @@ class App : Application() {
 
     val convertRateUseCase: ConvertRateUseCase
         get() = ConvertRateUseCase(ratesRepository)
+
+    val getHistoricalRatesUseCase: GetHistoricalRatesUseCase
+        get() = GetHistoricalRatesUseCase(ratesRepository)
 }
