@@ -1,6 +1,5 @@
 package com.hassan.currencycalc.ui.views
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -23,6 +22,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
@@ -30,19 +31,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.hassan.currencycalc.App
+import com.hassan.currencycalc.RoundRectangle
 import com.hassan.currencycalc.Utils
+import com.hassan.currencycalc.toPx
 import com.hassan.currencycalc.ui.theme.CurrencyCalcTheme
 import com.hassan.currencycalc.ui.theme.RippleCustomTheme
 import com.hassan.currencycalc.viewmodels.MainViewModel
 import com.hassan.currencycalc.viewmodels.MainViewModelFactory
 import com.hassan.domain.entities.Rates
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
+import com.madrapps.plot.line.DataPoint
+import com.madrapps.plot.line.LineGraph
+import com.madrapps.plot.line.LinePlot
+import java.text.DecimalFormat
 
 
 class MainActivity : AppCompatActivity() {
@@ -268,7 +273,29 @@ fun GraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
     ) {
 
 //        Text(text = "$rates", color = Color.White)
-        Spacer(modifier = Modifier.height(420.dp))
+        HistoricalRatesGraph(lines = listOf(listOf(
+            DataPoint(0f, 1f),
+            DataPoint(1f, 2f),
+            DataPoint(2f, 3f),
+            DataPoint(3f, 4f),
+            DataPoint(4f, 4f),
+            DataPoint(5f, 1f),
+            DataPoint(6f, 4f),
+            DataPoint(7f, 4f),
+            DataPoint(8f, 4f),
+            DataPoint(9f, 4f),
+            DataPoint(10f, 2f),
+            DataPoint(11f, 3f),
+            DataPoint(12f, 4f),
+            DataPoint(13f, 4f),
+            DataPoint(14f, 1f),
+            DataPoint(15f, 4f),
+            DataPoint(16f, 4f),
+            DataPoint(17f, 1f)
+                )
+            )
+        )
+        Spacer(modifier = Modifier.height(12.dp))
         TextButton(
             onClick = {  },
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -282,6 +309,158 @@ fun GraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
         }
         Spacer(modifier = Modifier.height(24.dp))
     }
+}
+
+@Composable
+fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Modifier) {
+    val totalWidth = remember { mutableStateOf(0) }
+
+    Column(Modifier.onGloballyPositioned {
+        totalWidth.value = it.size.width
+    }) {
+        val cardWidth = remember { mutableStateOf(0) }
+        val greenColor = MaterialTheme.colors.primaryVariant
+        val xOffset = remember { mutableStateOf(0f) }
+        val visibility = remember { mutableStateOf(false) }
+        val points = remember { mutableStateOf(listOf<DataPoint>()) }
+        val localDensity = LocalDensity.current
+        val padding = 16.dp
+
+        Box(Modifier.height(100.dp)) {
+            if (visibility.value) {
+                Surface(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .align(Alignment.Center)
+                        .onGloballyPositioned {
+                            cardWidth.value = it.size.width
+                        }
+                        .graphicsLayer(translationX = xOffset.value),
+                    shape = RoundedCornerShape(8.dp),
+                    color = greenColor
+                ) {
+                    Column(
+                        Modifier
+                            .padding(8.dp)
+                    ) {
+                        val value = points.value
+
+                        if (value.isNotEmpty()) {
+                            val x = DecimalFormat("#.#").format(value[0].x)
+                            val y = DecimalFormat("#.#").format(value[0].y)
+
+                            Text(
+                                text = "$x Jun",
+                                style = MaterialTheme.typography.subtitle1,
+                                color = Color.White
+                            )
+                            Text(
+                                text = "1 Eur = $y",
+                                style = MaterialTheme.typography.body1,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+
+            }
+        }
+
+        MaterialTheme(colors = MaterialTheme.colors.copy(surface = MaterialTheme.colors.onPrimary)) {
+            LineGraph(
+                plot = LinePlot(
+                    listOf(
+                        LinePlot.Line(
+                            dataPoints = lines[0],
+                            connection = null,
+                            intersection = null,
+                            highlight = LinePlot.Highlight { center ->
+                                drawCircle(Color.White, 5.dp.toPx(), center)
+                                drawCircle(greenColor, 3.dp.toPx(), center)
+                            },
+                            areaUnderLine = LinePlot.AreaUnderLine(color = MaterialTheme.colors.primary, alpha = 0.5f)
+                        )
+                    ),
+                    xAxis = LinePlot.XAxis(steps = 8, stepSize = 15.dp, paddingTop = 0.dp) {
+                            min, offset, max ->
+                        for (it in 0 until 8) {
+                            val value = it * offset + min
+                            Column {
+                                val isMajor = value % 2 == 0f
+                                Canvas(
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                        .height(20.dp).size(4.dp),
+                                    onDraw = {
+                                        drawRect(
+                                            color = Color.White,
+                                            alpha = 1f,
+                                            size = Size(4f, 8f)
+                                        )
+                                    })
+                                if (isMajor) {
+                                    Text(
+                                        text = DecimalFormat("#.# Jun").format(value),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        style = MaterialTheme.typography.caption,
+                                        color = Color.White
+                                    )
+                                }
+                            }
+                            if (value > 31) {
+                                break
+                            }
+                        }
+
+                    },
+                    yAxis = LinePlot.YAxis(steps = 7, paddingEnd = 0.dp) { min, offset, max ->
+                        for (it in 0 until 7) {
+                            val value = it + min
+                            Column {
+                                Canvas(
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                        .height(20.dp).size(4.dp),
+                                    onDraw = {
+                                        drawRect(
+                                            color = Color.White,
+                                            alpha = 1f,
+                                            size = Size(8f, 4f)
+                                        )
+                                    })
+                            }
+                            if (value > max) {
+                                break
+                            }
+                        }
+                    }
+                ),
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colors.onPrimary,
+                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                    )
+                    .fillMaxWidth()
+                    .padding(8.dp, 8.dp, 24.dp, 8.dp)
+                    .height(300.dp),
+                onSelectionStart = { visibility.value = true },
+                onSelectionEnd = { visibility.value = false }
+            ) { x, pts ->
+                val cWidth = cardWidth.value.toFloat()
+                var xStart = x
+                xStart = when {
+                    xStart + cWidth > totalWidth.value -> totalWidth.value - cWidth - 24f
+                    else -> xStart
+                }
+                xOffset.value = xStart
+                points.value = pts
+            }
+        }
+
+    }
+
+
 }
 
 
