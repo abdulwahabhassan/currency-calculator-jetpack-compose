@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -38,6 +39,8 @@ import androidx.compose.ui.unit.toSize
 import com.hassan.currencycalc.App
 import com.hassan.currencycalc.RoundRectangle
 import com.hassan.currencycalc.Utils
+import com.hassan.currencycalc.Utils.calculatePastDate
+import com.hassan.currencycalc.Utils.todayDate
 import com.hassan.currencycalc.toPx
 import com.hassan.currencycalc.ui.theme.CurrencyCalcTheme
 import com.hassan.currencycalc.ui.theme.RippleCustomTheme
@@ -259,23 +262,22 @@ fun BodyContent(
 @Composable
 fun GraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
 
-    val date by rememberSaveable { mutableStateOf("2019-03-16") }
+    var date by rememberSaveable { mutableStateOf(todayDate()) }
     mainViewModel.getHistoricalRates(date, base, symbols)
     val rates by mainViewModel.historicalRates.observeAsState(Rates())
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
             .background(
                 color = MaterialTheme.colors.onPrimary,
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             )
     ) {
 
-//        Text(text = "$rates", color = Color.White)
-        HistoricalRatesGraph(lines = listOf(listOf(
-            DataPoint(0f, 1f),
-            DataPoint(1f, 2f),
+        Text(text = "$rates", color = Color.White)
+        HistoricalRatesGraph(
+            lines = listOf(listOf(
+            DataPoint(1f, 0f),
             DataPoint(2f, 3f),
             DataPoint(3f, 4f),
             DataPoint(4f, 4f),
@@ -291,11 +293,15 @@ fun GraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
             DataPoint(14f, 1f),
             DataPoint(15f, 4f),
             DataPoint(16f, 4f),
-            DataPoint(17f, 1f)
+            DataPoint(17f, 1f),
+            DataPoint(18f, 4f),
+            DataPoint(19f, 4f),
+            DataPoint(20f, 1f)
                 )
-            )
+            ),
+            onDateSelected = { dateSelected -> date = dateSelected}
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         TextButton(
             onClick = {  },
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -307,12 +313,12 @@ fun GraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
                 textDecoration = TextDecoration.Underline
             )
         }
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(40.dp))
     }
 }
 
 @Composable
-fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Modifier) {
+fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Modifier, onDateSelected: (String) -> Unit ) {
     val totalWidth = remember { mutableStateOf(0) }
 
     Column(Modifier.onGloballyPositioned {
@@ -320,11 +326,78 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
     }) {
         val cardWidth = remember { mutableStateOf(0) }
         val greenColor = MaterialTheme.colors.primaryVariant
+        val blueColor = MaterialTheme.colors.onPrimary
         val xOffset = remember { mutableStateOf(0f) }
         val visibility = remember { mutableStateOf(false) }
         val points = remember { mutableStateOf(listOf<DataPoint>()) }
+        var clicked30Days by remember { mutableStateOf(true) }
+        var clicked90Days by remember { mutableStateOf(false)}
+
         val localDensity = LocalDensity.current
         val padding = 16.dp
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Row(modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly) {
+
+            //30 days Text Button
+            TextButton(onClick = {
+                if(!clicked30Days) {
+                    clicked30Days = !clicked30Days
+                    clicked90Days = !clicked90Days
+                    onDateSelected(calculatePastDate(30))
+                }
+                                 },
+                shape = RoundedCornerShape(6.dp)) {
+                Column {
+                    Text(text = "Past 30 days", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Canvas(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .height(20.dp)
+                            .size(4.dp),
+                        onDraw = {
+                            drawCircle(
+                                color = if (clicked30Days) greenColor else blueColor,
+                                3f * density,
+                                Offset(0f, 10f * density)
+                            )
+                        })
+                }
+
+            }
+
+            //90 days Text Button
+            TextButton(onClick = {
+                if(!clicked90Days) {
+                    clicked90Days = !clicked90Days
+                    clicked30Days = !clicked30Days
+                    onDateSelected(calculatePastDate(90))
+                }
+                                 },
+                shape = RoundedCornerShape(6.dp)) {
+                Column {
+                    Text(text = "Past 90 days", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Canvas(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .height(20.dp)
+                            .size(4.dp),
+                        onDraw = {
+                            drawCircle(
+                                color = if (clicked90Days) greenColor else blueColor,
+                                3f * density,
+                                Offset(0f, 10f * density)
+                            )
+                        })
+                }
+
+            }
+        }
 
         Box(Modifier.height(100.dp)) {
             if (visibility.value) {
@@ -346,8 +419,8 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
                         val value = points.value
 
                         if (value.isNotEmpty()) {
-                            val x = DecimalFormat("#.#").format(value[0].x)
-                            val y = DecimalFormat("#.#").format(value[0].y)
+                            val x = DecimalFormat("00").format(value[0].x)
+                            val y = DecimalFormat("0").format(value[0].y)
 
                             Text(
                                 text = "$x Jun",
@@ -381,16 +454,26 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
                             areaUnderLine = LinePlot.AreaUnderLine(color = MaterialTheme.colors.primary, alpha = 0.5f)
                         )
                     ),
-                    xAxis = LinePlot.XAxis(steps = 8, stepSize = 15.dp, paddingTop = 0.dp) {
+                    selection = LinePlot.Selection(
+                        highlight = LinePlot.Connection(
+                            Color.Red,
+                            strokeWidth = 2.dp,
+                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(40f, 20f))
+                        )
+                    ),
+                    isZoomAllowed = false,
+                    xAxis = LinePlot.XAxis(steps = lines[0].last().x.toInt(), paddingTop = 0.dp) {
                             min, offset, max ->
-                        for (it in 0 until 8) {
-                            val value = it * offset + min
+                        for (it in lines[0]) {
+                            val value = it.x * offset
                             Column {
-                                val isMajor = value % 2 == 0f
+                                val isEven = value % 3 == 0f
+
                                 Canvas(
                                     modifier = Modifier
                                         .align(Alignment.CenterHorizontally)
-                                        .height(20.dp).size(4.dp),
+                                        .height(20.dp)
+                                        .size(4.dp),
                                     onDraw = {
                                         drawRect(
                                             color = Color.White,
@@ -398,30 +481,34 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
                                             size = Size(4f, 8f)
                                         )
                                     })
-                                if (isMajor) {
+
+                                if(isEven) {
                                     Text(
-                                        text = DecimalFormat("#.# Jun").format(value),
+                                        modifier = Modifier.padding(start = 24.dp),
+                                        text = DecimalFormat("00 'Jun'").format(value),
                                         maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
+                                        overflow = TextOverflow.Visible,
                                         style = MaterialTheme.typography.caption,
                                         color = Color.White
                                     )
                                 }
+
+
                             }
-                            if (value > 31) {
+                            if (value > max) {
                                 break
                             }
                         }
-
                     },
                     yAxis = LinePlot.YAxis(steps = 7, paddingEnd = 0.dp) { min, offset, max ->
-                        for (it in 0 until 7) {
-                            val value = it + min
+                        for (it in 0..7) {
+                            val value = it * offset + min
                             Column {
                                 Canvas(
                                     modifier = Modifier
                                         .align(Alignment.CenterHorizontally)
-                                        .height(20.dp).size(4.dp),
+                                        .height(20.dp)
+                                        .size(4.dp),
                                     onDraw = {
                                         drawRect(
                                             color = Color.White,
@@ -439,11 +526,10 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
                 modifier = Modifier
                     .background(
                         color = MaterialTheme.colors.onPrimary,
-                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                     )
                     .fillMaxWidth()
                     .padding(8.dp, 8.dp, 24.dp, 8.dp)
-                    .height(300.dp),
+                    .height(250.dp),
                 onSelectionStart = { visibility.value = true },
                 onSelectionEnd = { visibility.value = false }
             ) { x, pts ->

@@ -45,6 +45,6 @@ class NetworkModule {
     }
 
     companion object {
-        private const val API_ACCESS_KEY = "ccf3fa4c2592fc1bab20a93ace335a06"
+        private const val API_ACCESS_KEY = "4fd19d71017e78d17d742646003ff985"
     }
 }

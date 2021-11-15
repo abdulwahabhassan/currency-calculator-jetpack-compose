@@ -94,6 +94,11 @@ object Utils {
         return today.minusDays(daysAgo).toString()
     }
 
+    fun todayDate(): String {
+        val zoneId = ZoneId.of("Africa/Lagos")
+        return LocalDate.now(zoneId).toString()
+    }
+
 
 }
 
