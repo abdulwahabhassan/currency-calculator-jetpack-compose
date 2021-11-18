@@ -23,7 +23,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -37,11 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.hassan.currencycalc.App
-import com.hassan.currencycalc.RoundRectangle
 import com.hassan.currencycalc.Utils
 import com.hassan.currencycalc.Utils.calculatePastDate
+import com.hassan.currencycalc.Utils.getLines
 import com.hassan.currencycalc.Utils.todayDate
-import com.hassan.currencycalc.toPx
 import com.hassan.currencycalc.ui.theme.CurrencyCalcTheme
 import com.hassan.currencycalc.ui.theme.RippleCustomTheme
 import com.hassan.currencycalc.viewmodels.MainViewModel
@@ -55,6 +53,8 @@ import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
 
+
+    //initialize view mainViewModel and provide its dependencies
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModelFactory(
             (this.application as App).getRatesUseCase,
@@ -70,20 +70,19 @@ class MainActivity : AppCompatActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
 
+
                     val mapOfCurrencySymbolsToFlag = mutableMapOf<String, String>()
+
+                    //read country data from json file in assets folder and add to the mutable map
+                    //above
                     Utils.loadCountriesFromAsset(assets, "flags.json")?.forEach {
                         mapOfCurrencySymbolsToFlag[it.currency.code] = it.flag
                     }
+                    //composable representing main activity
                     MainActivityScreen(mainViewModel = mainViewModel, mapOfCurrencySymbolsToFlag)
                 }
             }
         }
-
-//        mainViewModel.getRates()
-//        mainViewModel.remoteRates.observe(this, {
-//            Log.i("remote rates", "$it")
-//        }
-//        )
     }
 }
 
@@ -229,7 +228,7 @@ fun BodyContent(
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            //mid market exchage rate text
+            //mid market exchange rate text
             CompositionLocalProvider(LocalRippleTheme provides RippleCustomTheme) {
                 TextButton(
                     onClick = {  },
@@ -261,10 +260,11 @@ fun BodyContent(
 
 @Composable
 fun GraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
-
     var date by rememberSaveable { mutableStateOf(todayDate()) }
-    mainViewModel.getHistoricalRates(date, base, symbols)
-    val rates by mainViewModel.historicalRates.observeAsState(Rates())
+
+    //due to the fact that the api service requires subscription, can't use this feature now
+//    mainViewModel.getHistoricalRates(date, base, symbols)
+//    val rates by mainViewModel.historicalRates.observeAsState(Rates())
 
     Column(
         modifier = Modifier
@@ -273,32 +273,10 @@ fun GraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             )
     ) {
-
-        Text(text = "$rates", color = Color.White)
+        
         HistoricalRatesGraph(
-            lines = listOf(listOf(
-            DataPoint(1f, 0f),
-            DataPoint(2f, 3f),
-            DataPoint(3f, 4f),
-            DataPoint(4f, 4f),
-            DataPoint(5f, 1f),
-            DataPoint(6f, 4f),
-            DataPoint(7f, 4f),
-            DataPoint(8f, 4f),
-            DataPoint(9f, 4f),
-            DataPoint(10f, 2f),
-            DataPoint(11f, 3f),
-            DataPoint(12f, 4f),
-            DataPoint(13f, 4f),
-            DataPoint(14f, 1f),
-            DataPoint(15f, 4f),
-            DataPoint(16f, 4f),
-            DataPoint(17f, 1f),
-            DataPoint(18f, 4f),
-            DataPoint(19f, 4f),
-            DataPoint(20f, 1f)
-                )
-            ),
+            lines = getLines(),
+            symbols = symbols,
             onDateSelected = { dateSelected -> date = dateSelected}
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -318,7 +296,7 @@ fun GraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
 }
 
 @Composable
-fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Modifier, onDateSelected: (String) -> Unit ) {
+fun HistoricalRatesGraph(lines: List<List<DataPoint>>, symbols: String, onDateSelected: (String) -> Unit ) {
     val totalWidth = remember { mutableStateOf(0) }
 
     Column(Modifier.onGloballyPositioned {
@@ -332,9 +310,6 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
         val points = remember { mutableStateOf(listOf<DataPoint>()) }
         var clicked30Days by remember { mutableStateOf(true) }
         var clicked90Days by remember { mutableStateOf(false)}
-
-        val localDensity = LocalDensity.current
-        val padding = 16.dp
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -403,7 +378,6 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
             if (visibility.value) {
                 Surface(
                     modifier = Modifier
-                        .width(100.dp)
                         .align(Alignment.Center)
                         .onGloballyPositioned {
                             cardWidth.value = it.size.width
@@ -423,13 +397,13 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
                             val y = DecimalFormat("0").format(value[0].y)
 
                             Text(
-                                text = "$x Jun",
+                                text = "$x day",
                                 style = MaterialTheme.typography.subtitle1,
                                 color = Color.White
                             )
                             Text(
-                                text = "1 Eur = $y",
-                                style = MaterialTheme.typography.body1,
+                                text = "1 EUR = $y $symbols",
+                                style = MaterialTheme.typography.body2,
                                 color = Color.White
                             )
                         }
@@ -444,7 +418,7 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
                 plot = LinePlot(
                     listOf(
                         LinePlot.Line(
-                            dataPoints = lines[0],
+                            dataPoints = if(clicked30Days) lines[0] else lines[1],
                             connection = null,
                             intersection = null,
                             highlight = LinePlot.Highlight { center ->
@@ -462,12 +436,13 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
                         )
                     ),
                     isZoomAllowed = false,
-                    xAxis = LinePlot.XAxis(steps = lines[0].last().x.toInt(), paddingTop = 0.dp) {
+                    xAxis = LinePlot.XAxis(steps = if(clicked30Days) lines[0].size else lines[1].size, paddingTop = 0.dp) {
                             min, offset, max ->
-                        for (it in lines[0]) {
+                        for (it in if(clicked30Days) lines[0] else lines[1]) {
                             val value = it.x * offset
                             Column {
-                                val isEven = value % 3 == 0f
+
+                                val isRemainderOne = value % 3 == 1f
 
                                 Canvas(
                                     modifier = Modifier
@@ -482,10 +457,10 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
                                         )
                                     })
 
-                                if(isEven) {
+                                if(isRemainderOne) {
                                     Text(
                                         modifier = Modifier.padding(start = 24.dp),
-                                        text = DecimalFormat("00 'Jun'").format(value),
+                                        text = DecimalFormat("00 'day'").format(value),
                                         maxLines = 1,
                                         overflow = TextOverflow.Visible,
                                         style = MaterialTheme.typography.caption,
@@ -531,7 +506,7 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>,  modifier: Modifier = Mod
                     .padding(8.dp, 8.dp, 24.dp, 8.dp)
                     .height(250.dp),
                 onSelectionStart = { visibility.value = true },
-                onSelectionEnd = { visibility.value = false }
+                onSelectionEnd = {  }
             ) { x, pts ->
                 val cWidth = cardWidth.value.toFloat()
                 var xStart = x
