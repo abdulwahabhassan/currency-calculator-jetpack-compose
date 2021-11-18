@@ -92,6 +92,7 @@ fun MainActivityScreen(
     mapOfCurrencySymbolsToFlag: MutableMap<String, String>
 ) {
 
+    //use scaffold to implement main activity ui structure
     Scaffold(
         topBar = {
             TopAppBar(
@@ -113,6 +114,7 @@ fun MainActivityScreen(
                 },
                 actions = {
                     CompositionLocalProvider(LocalRippleTheme provides RippleCustomTheme) {
+                        //set custom ripple that is applied locally to the children of this composable
                         TextButton(
                             onClick = {
                                 /*TODO*/
@@ -154,7 +156,7 @@ fun BodyContent(
         Column(modifier = Modifier.padding(24.dp, 0.dp, 24.dp, 0.dp)) {
             AppName(modifier)
             Spacer(modifier = Modifier.height(40.dp))
-            //Make the first EditText readOnly
+            //Make the first EditText readOnly due to restricted features of api current subscription
             EditText(
                 firstEditTextTrailingText,
                 modifier,
@@ -162,7 +164,10 @@ fun BodyContent(
                 value = "1",
                 enabled = false
             )
+
+            //create space between edit texts
             Spacer(modifier = Modifier.height(16.dp))
+
             EditText(
                 secondEditTextTrailingText,
                 modifier,
@@ -228,8 +233,9 @@ fun BodyContent(
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            //mid market exchange rate text
+//            //mid market exchange rate text
             CompositionLocalProvider(LocalRippleTheme provides RippleCustomTheme) {
+                //set custom ripple that is applied locally to the children of this composable
                 TextButton(
                     onClick = {  },
                     modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -250,8 +256,11 @@ fun BodyContent(
                 }
             }
 
+
         }
         Spacer(modifier = Modifier.height(32.dp))
+
+        //graph section
         GraphSection(mainViewModel, firstEditTextTrailingText, secondEditTextTrailingText)
     }
 
@@ -374,12 +383,15 @@ fun HistoricalRatesGraph(lines: List<List<DataPoint>>, symbols: String, onDateSe
             }
         }
 
+        //box for displaying highlighted selection of a data point in the graph
         Box(Modifier.height(100.dp)) {
             if (visibility.value) {
                 Surface(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .onGloballyPositioned {
+                            //this is used to retrieve the composable layout coordinates after every
+                            //composition
                             cardWidth.value = it.size.width
                         }
                         .graphicsLayer(translationX = xOffset.value),
@@ -540,6 +552,7 @@ fun DropDownEditText(
     var selectedSymbol by rememberSaveable {mutableStateOf(defaultSymbol)}
 
     Box {
+
         OutlinedTextField(
             modifier = modifier
                 .border(
@@ -590,6 +603,7 @@ fun DropDownEditText(
             ),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters)
         )
+
         DropdownMenu(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false },
