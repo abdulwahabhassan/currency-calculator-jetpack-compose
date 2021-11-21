@@ -1,6 +1,9 @@
 plugins {
     id 'java-library'
     id 'kotlin'
+
+
+
 }
 
 java {
@@ -13,4 +16,5 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "com.google.code.gson:gson:2.8.7"
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.8.5'
+
 }

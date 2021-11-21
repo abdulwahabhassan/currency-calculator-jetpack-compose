@@ -6,9 +6,12 @@ import com.hassan.domain.entities.Rates
 import com.hassan.domain.usecases.ConvertRateUseCase
 import com.hassan.domain.usecases.GetHistoricalRatesUseCase
 import com.hassan.domain.usecases.GetRatesUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(
+@HiltViewModel
+class MainViewModel @Inject constructor (
     private val getRatesUseCase: GetRatesUseCase,
     private val convertRateUseCase: ConvertRateUseCase,
     private val getHistoricalRatesUseCase: GetHistoricalRatesUseCase

@@ -43,25 +43,18 @@ import com.hassan.currencycalc.Utils.todayDate
 import com.hassan.currencycalc.ui.theme.CurrencyCalcTheme
 import com.hassan.currencycalc.ui.theme.RippleCustomTheme
 import com.hassan.currencycalc.viewmodels.MainViewModel
-import com.hassan.currencycalc.viewmodels.MainViewModelFactory
 import com.hassan.domain.entities.Rates
 import com.madrapps.plot.line.DataPoint
 import com.madrapps.plot.line.LineGraph
 import com.madrapps.plot.line.LinePlot
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.DecimalFormat
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-
-    //initialize view mainViewModel and provide its dependencies
-    private val mainViewModel: MainViewModel by viewModels {
-        MainViewModelFactory(
-            (this.application as App).getRatesUseCase,
-            (this.application as App).convertRateUseCase,
-            (this.application as App).getHistoricalRatesUseCase
-        )
-    }
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +62,6 @@ class MainActivity : AppCompatActivity() {
             CurrencyCalcTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-
 
                     val mapOfCurrencySymbolsToFlag = mutableMapOf<String, String>()
 
