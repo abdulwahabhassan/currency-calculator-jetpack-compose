@@ -1,5 +1,6 @@
 package com.hassan.currencycalc.ui.views
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -28,7 +29,7 @@ import com.madrapps.plot.line.LinePlot
 import java.text.DecimalFormat
 
 @Composable
-fun MainGraph(lines: List<List<DataPoint>>, symbols: String, onDateSelected: (String) -> Unit ) {
+fun MainGraph(line: List<DataPoint>, symbols: String, onDateSelected: (String) -> Unit ) {
     val totalWidth = remember { mutableStateOf(0) }
 
     Column(Modifier.onGloballyPositioned {
@@ -42,6 +43,7 @@ fun MainGraph(lines: List<List<DataPoint>>, symbols: String, onDateSelected: (St
         val points = remember { mutableStateOf(listOf<DataPoint>()) }
         var clicked30Days by remember { mutableStateOf(true) }
         var clicked90Days by remember { mutableStateOf(false) }
+
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -127,15 +129,25 @@ fun MainGraph(lines: List<List<DataPoint>>, symbols: String, onDateSelected: (St
                         Modifier
                             .padding(8.dp)
                     ) {
-                        val value = points.value
 
-                        if (value.isNotEmpty()) {
-                            val x = DecimalFormat("00").format(value[0].x)
-                            val y = DecimalFormat("0").format(value[0].y)
+                        val lineValues =  arrayListOf<DataPointModel>()
+                        if( points.value.isNotEmpty()) {
+                            for (it in points.value) {
+                                Log.d("line", "${it}")
+                                val x = it.x.toInt().toString()
+                                val y = DecimalFormat("0").format(it.y)
+                                lineValues.add(DataPointModel(x, y))
+                            }
 
+                            val x = lineValues[0].x.takeLast(2)
+                            val y = lineValues[0].y
+
+                            Log.d("xy", "$x $y")
+
+                            val month = Utils.calculateMonth(lineValues[0].x.toString().substring(2, 4).toInt())
 
                             Text(
-                                text = "$x day",
+                                text = "$x $month",
                                 style = MaterialTheme.typography.subtitle1,
                                 color = Color.White
                             )
@@ -144,6 +156,7 @@ fun MainGraph(lines: List<List<DataPoint>>, symbols: String, onDateSelected: (St
                                 style = MaterialTheme.typography.body2,
                                 color = Color.White
                             )
+
                         }
                     }
                 }
@@ -156,7 +169,11 @@ fun MainGraph(lines: List<List<DataPoint>>, symbols: String, onDateSelected: (St
                 plot = LinePlot(
                     listOf(
                         LinePlot.Line(
-                            dataPoints = if(clicked30Days) lines[0] else lines[1],
+                            dataPoints = line.map { dataPoint ->
+                                DataPoint(
+                                    dataPoint.x.toInt().toString().takeLast(6).toFloat(),
+                                    dataPoint.y)
+                            },
                             connection = null,
                             intersection = null,
                             highlight = LinePlot.Highlight { center ->
@@ -176,15 +193,17 @@ fun MainGraph(lines: List<List<DataPoint>>, symbols: String, onDateSelected: (St
                         )
                     ),
                     isZoomAllowed = false,
+                    //x-axis
                     xAxis = LinePlot.XAxis(
-                        steps = if(clicked30Days) lines[0].size else lines[1].size,
+                        steps = 100,
                         paddingTop = 0.dp
                     ) { min, offset, max ->
-                        for (it in if(clicked30Days) lines[0] else lines[1]) {
-                            val value = it.x * offset
+                        for (it in line) {
+                            Log.d("it", "${it}")
+                            val value = it.x.toInt().toString().takeLast(2).toFloat()
                             Column {
 
-                                val isRemainderOne = value % 3 == 1f
+                                val space = line.indexOf(it) % 3 == 1
 
                                 Canvas(
                                     modifier = Modifier
@@ -199,10 +218,20 @@ fun MainGraph(lines: List<List<DataPoint>>, symbols: String, onDateSelected: (St
                                         )
                                     })
 
-                                if(isRemainderOne) {
+                                if(space) {
+                                    val month = Utils.calculateMonth(
+                                        it.x.toInt().toString().substring(2, 4).toInt()
+                                    )
+                                    //log
+                                    if (month != null) {
+                                        Log.d("month", "$month + ${
+                                            it.x.toInt().toString().substring(2, 4)
+                                        }")
+                                    }
+
                                     Text(
                                         modifier = Modifier.padding(start = 24.dp),
-                                        text = DecimalFormat("00 'day'").format(value),
+                                        text = DecimalFormat("00 '${month ?: ""}'").format(value),
                                         maxLines = 1,
                                         overflow = TextOverflow.Visible,
                                         style = MaterialTheme.typography.caption,
@@ -215,7 +244,7 @@ fun MainGraph(lines: List<List<DataPoint>>, symbols: String, onDateSelected: (St
                             }
                         }
                     },
-                    yAxis = LinePlot.YAxis(steps = 7, paddingEnd = 0.dp) { min, offset, max ->
+                    yAxis = LinePlot.YAxis(steps = 2, paddingEnd = 0.dp) { min, offset, max ->
                         for (it in 0..7) {
                             val value = it * offset + min
                             Column {
@@ -262,3 +291,8 @@ fun MainGraph(lines: List<List<DataPoint>>, symbols: String, onDateSelected: (St
     }
 
 }
+
+data class DataPointModel(
+    val x: String,
+    val y: String
+)

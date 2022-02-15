@@ -19,11 +19,4 @@ interface RatesRemoteDataSource {
         endDate: String
     ): Result<RatesResult>
 
-    suspend fun getLatestRates(base: String) : Result<RatesResult>
-
-    suspend fun convertRate(base: String, symbols: String): Result<RatesResult>
-
-    suspend fun getHistoricalRates(date: String, base: String, symbols: String): Result<RatesResult>
-
-
 }

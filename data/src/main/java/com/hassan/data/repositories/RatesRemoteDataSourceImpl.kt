@@ -35,7 +35,7 @@ class RatesRemoteDataSourceImpl(
             Result<RatesResult> =
         withContext(Dispatchers.IO) {
             try {
-                val response = service.getRates(base, target, startDate, endDate)
+                val response = service.getRates(base, listOf(target), startDate, endDate)
                 if (response.isSuccessful) {
                     return@withContext Result.Success(ratesResponseMapper.toRatesResult(response.body()!!))
                 } else {
@@ -45,51 +45,5 @@ class RatesRemoteDataSourceImpl(
                 return@withContext Result.Error(e)
             }
         }
-
-
-    override suspend fun getLatestRates(base: String): Result<RatesResult> =
-        withContext(Dispatchers.IO) {
-            try {
-                val response = service.getLatestRates(base)
-                if (response.isSuccessful) {
-                    return@withContext Result.Success(ratesResponseMapper.toRatesResult(response.body()!!))
-                } else {
-                    return@withContext Result.Error(Exception(response.message()))
-                }
-            }catch (e: Exception) {
-                return@withContext Result.Error(e)
-            }
-        }
-
-    override suspend fun convertRate(base: String, symbols: String): Result<RatesResult> =
-        withContext(Dispatchers.IO) {
-            try {
-                val response = service.convertRate(base = base, symbols = symbols)
-                if (response.isSuccessful) {
-                    return@withContext Result.Success(ratesResponseMapper.toRatesResult(response.body()!!))
-                } else {
-                    return@withContext Result.Error(Exception(response.message()))
-                }
-            }catch (e: Exception) {
-                return@withContext Result.Error(e)
-            }
-        }
-
-    override suspend fun getHistoricalRates(date: String, base: String, symbols: String):
-            Result<RatesResult> = withContext(Dispatchers.IO) {
-        try {
-            val response = service.getHistoricalRates(date = date, base = base, symbols = symbols)
-            if (response.isSuccessful) {
-                return@withContext Result.Success(ratesResponseMapper.toRatesResult(response.body()!!))
-            } else {
-                return@withContext Result.Error(Exception(response.message()))
-            }
-        }catch (e: Exception) {
-            return@withContext Result.Error(e)
-        }
-    }
-
-
-
 
 }

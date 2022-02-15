@@ -42,7 +42,7 @@ fun MainBodyContent(
     //MainRateTextField
     var baseAmount by rememberSaveable { mutableStateOf("1")}
 
-    //observe live data from rates as state, every time state changes as a result of new rates,
+    //observe live data from conversion rate as state, every time state changes as a result of new rates,
     //recomposition ensues on every composable that uses this rates
     val conversionRate by mainViewModel.conversionRate.observeAsState(ConversionResult())
 

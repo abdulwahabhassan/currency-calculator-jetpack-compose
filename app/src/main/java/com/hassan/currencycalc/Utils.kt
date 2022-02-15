@@ -11,9 +11,11 @@ import androidx.compose.ui.graphics.asImageBitmap
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hassan.domain.entities.Country
+import com.hassan.domain.entities.RatesResult
 import com.madrapps.plot.line.DataPoint
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
@@ -229,6 +231,39 @@ object Utils {
             DataPoint(90f, 50f)
             )
         )
+    }
+
+    fun mapDataPoints(timeSeriesRates: RatesResult?, target: String): List<DataPoint>? {
+        return if (timeSeriesRates?.rates != null) {
+            val mapOfDataPoints = timeSeriesRates.rates?.map { rate ->
+                //remove non-word characters
+                val dateValue = DecimalFormat("0000").format(rate.key.replace(Regex("\\W"), "").takeLast(6).toFloat()).toFloat()
+                Log.d("yes", dateValue.toString())
+                val rateValue = rate.value[target]?.toFloat() ?: 0f
+                DataPoint(dateValue, rateValue)
+            }
+            mapOfDataPoints
+        } else {
+            null
+        }
+    }
+
+    fun calculateMonth(value: Int): String? {
+        val map = mapOf<Int, String>(
+            1 to "Jan",
+            2 to "Feb",
+            3 to "Mar",
+            4 to "Apr",
+            5 to "May",
+            6 to "Jun",
+            7 to "Jul",
+            8 to "Aug",
+            9 to "Sep",
+            10 to "Oct",
+            11 to "Nov",
+            12 to "Dec"
+        )
+        return map[value.toInt()]
     }
 
 

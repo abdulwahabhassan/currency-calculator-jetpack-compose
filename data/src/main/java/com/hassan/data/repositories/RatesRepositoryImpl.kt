@@ -27,14 +27,5 @@ class RatesRepositoryImpl (
         return ratesRemoteDataSource.convert(from, to, amount)
     }
 
-    override suspend fun convertRate(base: String, symbols: String): Result<RatesResult> {
-        return ratesRemoteDataSource.convertRate(base, symbols)
-    }
-
-    override suspend fun getHistoricalRemoteRates(date: String, base: String, symbols: String): Result<RatesResult> {
-        return ratesRemoteDataSource.getHistoricalRates(date, base, symbols)
-    }
-
-
 
 }

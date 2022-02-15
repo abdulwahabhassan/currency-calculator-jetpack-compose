@@ -1,15 +1,14 @@
 package com.hassan.currencycalc.ui.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -21,29 +20,43 @@ import androidx.compose.ui.unit.dp
 import com.hassan.currencycalc.R
 import com.hassan.currencycalc.Utils
 import com.hassan.currencycalc.viewmodels.MainViewModel
+import com.hassan.domain.entities.RatesResult
 
 @Composable
-fun MainGraphSection(mainViewModel: MainViewModel, base: String, symbols: String) {
-    var date by rememberSaveable { mutableStateOf(Utils.todayDate()) }
+fun MainGraphSection(mainViewModel: MainViewModel, base: String, target: String) {
 
-    //due to the fact that the api service requires subscription, can't use this feature now
-//    mainViewModel.getHistoricalRates(date, base, symbols)
-//    val rates by mainViewModel.historicalRates.observeAsState(Rates())
+    //set initial dates
+    var startDate by rememberSaveable { mutableStateOf(Utils.calculatePastDate(30)) }
+    val endDate by rememberSaveable { mutableStateOf(Utils.todayDate()) }
+
+    //get time series
+    mainViewModel.getTimeSeriesRates(base, target, startDate, endDate)
+
+    //observe live data from time series rates as state, every time state changes as a result of new rates,
+    //recomposition ensues on every composable that uses this rates
+    val timeSeriesRates by mainViewModel.timeSeriesRates.observeAsState(RatesResult())
 
     Column(
-        modifier = Modifier
+        modifier = Modifier.fillMaxWidth()
             .background(
                 color = MaterialTheme.colors.onPrimary,
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             )
     ) {
 
-        MainGraph(
-            lines = Utils.getLines(),
-            symbols = symbols,
-            onDateSelected = { dateSelected -> date = dateSelected}
-        )
+        //if list of data points is not null, plot graph
+        Utils.mapDataPoints(timeSeriesRates, target)?.let {
+            MainGraph(
+                line = it,
+                symbols = target,
+                onDateSelected = { dateSelected ->
+                    startDate = dateSelected
+                }
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
+
         TextButton(
             onClick = {  },
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -55,6 +68,7 @@ fun MainGraphSection(mainViewModel: MainViewModel, base: String, symbols: String
                 textDecoration = TextDecoration.Underline
             )
         }
+
         Spacer(modifier = Modifier.height(40.dp))
     }
 }

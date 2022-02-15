@@ -17,15 +17,4 @@ interface RatesRepository {
         startDate: String,
         endDate: String): Result<RatesResult>
 
-    suspend fun convertRate(
-        base: String,
-        symbols: String
-    ): Result<RatesResult>
-
-    suspend fun getHistoricalRemoteRates(
-        date: String,
-        base: String,
-        symbols: String): Result<RatesResult>
-
-
 }

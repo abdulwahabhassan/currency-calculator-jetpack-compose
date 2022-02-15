@@ -5,9 +5,7 @@ import androidx.lifecycle.*
 import com.hassan.domain.Result
 import com.hassan.domain.entities.ConversionResult
 import com.hassan.domain.entities.RatesResult
-import com.hassan.domain.usecases.ConvertRateUseCase
 import com.hassan.domain.usecases.ConvertUseCase
-import com.hassan.domain.usecases.GetHistoricalRatesUseCase
 import com.hassan.domain.usecases.GetRatesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -16,8 +14,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor (
     private val getRatesUseCase: GetRatesUseCase,
-    private val convertRateUseCase: ConvertRateUseCase,
-    private val getHistoricalRatesUseCase: GetHistoricalRatesUseCase,
     private val convertUseCase: ConvertUseCase
 ) : ViewModel() {
 

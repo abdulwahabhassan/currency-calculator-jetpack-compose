@@ -8,9 +8,7 @@ import com.hassan.data.mappers.ConversionResponseMapper
 import com.hassan.data.repositories.RatesRemoteDataSourceImpl
 import com.hassan.data.repositories.RatesRepositoryImpl
 import com.hassan.domain.repositories.RatesRepository
-import com.hassan.domain.usecases.ConvertRateUseCase
 import com.hassan.domain.usecases.ConvertUseCase
-import com.hassan.domain.usecases.GetHistoricalRatesUseCase
 import com.hassan.domain.usecases.GetRatesUseCase
 import dagger.Module
 import dagger.Provides
@@ -90,22 +88,6 @@ object UseCasesModule {
         ratesRepository: RatesRepository
     ) : GetRatesUseCase {
         return GetRatesUseCase(ratesRepository)
-    }
-
-    @ViewModelScoped
-    @Provides
-    fun provideConvertRateUseCase(
-        ratesRepository: RatesRepository
-    ) : ConvertRateUseCase {
-        return ConvertRateUseCase(ratesRepository)
-    }
-
-    @ViewModelScoped
-    @Provides
-    fun providesGetHistoricalRatesUseCase(
-        ratesRepository: RatesRepository
-    ) : GetHistoricalRatesUseCase {
-        return GetHistoricalRatesUseCase(ratesRepository)
     }
 
     @ViewModelScoped

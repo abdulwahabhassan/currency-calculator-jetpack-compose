@@ -38,9 +38,10 @@ interface FixerApi {
     //get historical rates between any two dates
     @GET("timeseries")
     suspend fun getRates(
-        @Query("start_date") startDate: String,
-        @Query("end_date") endDate: String,
         @Query("base") base: String,
-        @Query("symbols") target: String
+        @Query("symbols") target: List<String>,
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String
+
     ): Response<RatesResponse>
 }
