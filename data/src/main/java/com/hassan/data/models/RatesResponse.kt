@@ -5,15 +5,15 @@ import com.google.gson.annotations.SerializedName
 data class RatesResponse (
     @SerializedName("success")
     var success: Boolean?,
-    @SerializedName("timestamp")
-    var timestamp: Long?,
-    @SerializedName("historical")
-    var historical: Boolean?,
+    @SerializedName("timeseries")
+    var timeSeries: Boolean?,
+    @SerializedName("startDate")
+    var startDate: String?,
+    @SerializedName("endDate")
+    var endDate: String?,
     @SerializedName("base")
     var base: String?,
-    @SerializedName("date")
-    var date: String?,
     @SerializedName("rates")
-    var rates: Map<String, Double>?
+    var rates: Map<String, Map<String, Double>>?
         )
 

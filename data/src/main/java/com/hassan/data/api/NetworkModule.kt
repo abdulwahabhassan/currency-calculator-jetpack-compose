@@ -44,8 +44,8 @@ class NetworkModule {
 
 
     //creates an implementation of rates api end points
-    fun createRatesApi(baseUrl: String): RatesApi {
-        return getRetrofit(baseUrl).create(RatesApi::class.java)
+    fun createRatesApi(baseUrl: String): FixerApi {
+        return getRetrofit(baseUrl).create(FixerApi::class.java)
     }
 
     companion object {

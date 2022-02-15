@@ -1,13 +1,15 @@
 package com.hassan.currencycalc.di
 
 import com.hassan.data.api.NetworkModule
-import com.hassan.data.api.RatesApi
+import com.hassan.data.api.FixerApi
 import com.hassan.data.mappers.RatesResponseMapper
 import com.hassan.data.datasource.RatesRemoteDataSource
+import com.hassan.data.mappers.ConversionResponseMapper
 import com.hassan.data.repositories.RatesRemoteDataSourceImpl
 import com.hassan.data.repositories.RatesRepositoryImpl
 import com.hassan.domain.repositories.RatesRepository
 import com.hassan.domain.usecases.ConvertRateUseCase
+import com.hassan.domain.usecases.ConvertUseCase
 import com.hassan.domain.usecases.GetHistoricalRatesUseCase
 import com.hassan.domain.usecases.GetRatesUseCase
 import dagger.Module
@@ -41,18 +43,23 @@ object RatesApiModule {
     private const val LATEST_RATE_API_BASE_URL = "http://data.fixer.io/api/"
 
     @Provides
-    fun providesRatesApi () : RatesApi {
+    fun providesRatesApi () : FixerApi {
         return NetworkModule().createRatesApi(LATEST_RATE_API_BASE_URL)
     }
 }
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ResponseMapperModule {
+object MapperModule {
 
     @Provides
     fun provideRatesResponseMapper(): RatesResponseMapper {
         return RatesResponseMapper()
+    }
+
+    @Provides
+    fun provideConversionResponseMapper() : ConversionResponseMapper {
+        return ConversionResponseMapper()
     }
 }
 
@@ -62,10 +69,14 @@ object RatesRemoteDataSourceModule {
 
     @Provides
     fun provideRatesRemoteDataSource(
-        ratesApi: RatesApi,
-        mapper: RatesResponseMapper
+        fixerApi: FixerApi,
+        ratesResponseMapper: RatesResponseMapper,
+        conversionResponseMapper: ConversionResponseMapper
     ) : RatesRemoteDataSource {
-        return RatesRemoteDataSourceImpl(ratesApi, mapper)
+        return RatesRemoteDataSourceImpl(
+            fixerApi,
+            ratesResponseMapper,
+            conversionResponseMapper)
     }
 }
 
@@ -95,5 +106,13 @@ object UseCasesModule {
         ratesRepository: RatesRepository
     ) : GetHistoricalRatesUseCase {
         return GetHistoricalRatesUseCase(ratesRepository)
+    }
+
+    @ViewModelScoped
+    @Provides
+    fun providesConvertUseCase(
+        ratesRepository: RatesRepository
+    ) : ConvertUseCase {
+        return ConvertUseCase(ratesRepository)
     }
 }

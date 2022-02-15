@@ -4,14 +4,15 @@ import com.hassan.data.models.RatesResponse
 import com.hassan.domain.entities.RatesResult
 
 class RatesResponseMapper {
-    fun toRates(response: RatesResponse): RatesResult {
+    //map response model to entity
+    fun toRatesResult(response: RatesResponse): RatesResult {
         return RatesResult(
-            response.success,
-            response.timestamp,
-            response.historical,
-            response.base,
-            response.date,
-            response.rates
+            success = response.success,
+            timeSeries = response.timeSeries,
+            startDate = response.startDate,
+            endDate = response.endDate,
+            base = response.base,
+            rates = response.rates
         )
     }
 }

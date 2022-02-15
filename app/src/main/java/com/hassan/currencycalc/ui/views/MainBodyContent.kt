@@ -1,5 +1,7 @@
 package com.hassan.currencycalc.ui.views
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,10 +22,11 @@ import androidx.compose.ui.unit.sp
 import com.hassan.currencycalc.R
 import com.hassan.currencycalc.ui.theme.RippleCustomTheme
 import com.hassan.currencycalc.viewmodels.MainViewModel
-import com.hassan.domain.entities.RatesResult
+import com.hassan.domain.entities.ConversionResult
 
 @Composable
 fun MainBodyContent(
+    context: Context,
     modifier: Modifier,
     mapOfCurrencySymbolsToFlag: MutableMap<String, String>,
     mainViewModel: MainViewModel
@@ -35,9 +38,13 @@ fun MainBodyContent(
     var baseCurrencySymbol by rememberSaveable { mutableStateOf("EUR") }
     var targetCurrencySymbol by rememberSaveable { mutableStateOf("PLN") }
 
+    //initialize mutable state with default value as base amount for base currency
+    //MainRateTextField
+    var baseAmount by rememberSaveable { mutableStateOf("1")}
+
     //observe live data from rates as state, every time state changes as a result of new rates,
     //recomposition ensues on every composable that uses this rates
-    val targetRates by mainViewModel.targetRates.observeAsState(RatesResult())
+    val conversionRate by mainViewModel.conversionRate.observeAsState(ConversionResult())
 
     Column(modifier = modifier.verticalScroll(scrollState)) {
         Column(modifier = Modifier.padding(24.dp, 0.dp)) {
@@ -51,21 +58,23 @@ fun MainBodyContent(
             MainRateTextField( 
                 baseCurrencySymbol,
                 modifier,
-                readOnly = true, //make readOnly due to restricted features of api's current subscription
-                value = "1",
-                enabled = false
+                readOnly = false,
+                value = baseAmount.toString(),
+                enabled = true,
+                onBaseAmountChanged = { newBaseAmount -> baseAmount = newBaseAmount }
             )
 
             //apply vertical spacing between the text fields
             Spacer(modifier = Modifier.height(16.dp))
 
-            //rate text field
-            MainRateTextField( 
+            //target text field
+            MainRateTextField(
                 targetCurrencySymbol,
                 modifier,
                 readOnly = false,
-                value = targetRates?.rates?.get(targetCurrencySymbol)?.toString() ?: "",
-                enabled = false
+                value = if (conversionRate?.result != null) String.format("%.6f", conversionRate?.result) else "",
+                enabled = false,
+                onBaseAmountChanged = { }
             )
 
             //vertical spacing between rate text field and currency pickers
@@ -82,8 +91,8 @@ fun MainBodyContent(
                 //base currency picker
                 MainCurrencyPicker(
                     modifier,
-                    readOnly = true,
-                    enabled = false,
+                    readOnly = false,
+                    enabled = true,
                     defaultSymbol = "EUR",
                     mapOfCurrencySymbolsToFlag,
                     onSymbolSelected = { newText -> baseCurrencySymbol = newText }
@@ -116,7 +125,16 @@ fun MainBodyContent(
             Button(
                 elevation = null,
                 onClick = {
-                    mainViewModel.convertRate(baseCurrencySymbol, targetCurrencySymbol)
+                    if(baseAmount.isNotEmpty()) {
+                        mainViewModel.convert(
+                            baseCurrencySymbol,
+                            targetCurrencySymbol,
+                            baseAmount.toDouble()
+                        )
+                        Toast.makeText(context, "Calculating..", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Enter an amount", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 modifier = Modifier
                     .height(50.dp)

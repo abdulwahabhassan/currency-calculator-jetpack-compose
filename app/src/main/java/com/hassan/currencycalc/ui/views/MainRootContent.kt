@@ -1,5 +1,6 @@
 package com.hassan.currencycalc.ui.views
 
+import android.content.Context
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -18,6 +19,7 @@ import com.hassan.currencycalc.viewmodels.MainViewModel
 
 @Composable
 fun MainRootContent(
+    context: Context,
     mainViewModel: MainViewModel,
     mapOfCurrencySymbolsToFlag: MutableMap<String, String>
 ) {
@@ -58,6 +60,7 @@ fun MainRootContent(
             }
         ) { innerPadding -> //body content of main activity
             MainBodyContent(
+                context,
                 Modifier.padding(innerPadding),
                 mapOfCurrencySymbolsToFlag,
                 mainViewModel

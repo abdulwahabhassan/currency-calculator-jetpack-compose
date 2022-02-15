@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             //compose main root content
             MainRootContent(
+                this,
                 mainViewModel = mainViewModel,
                 mapOfCurrencySymbolsToFlag = Utils.loadMapOfCurrencySymbolToFlag(assets)
             )

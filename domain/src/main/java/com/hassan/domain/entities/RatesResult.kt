@@ -1,10 +1,10 @@
 package com.hassan.domain.entities
 
 data class RatesResult(
-    val success: Boolean? = null,
-    val timestamp: Long? = null,
-    val historical: Boolean? = null,
+    val success: Boolean? = false,
+    val timeSeries: Boolean? = false,
+    val startDate: String? = null,
+    val endDate: String? = null,
     val base: String? = null,
-    val date: String? = null,
-    val rates: Map<String, Double>? = null
+    val rates: Map<String, Map<String, Double>>? = null
 )
