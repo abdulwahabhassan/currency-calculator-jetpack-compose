@@ -144,7 +144,8 @@ fun MainGraph(line: List<DataPoint>, symbols: String, onDateSelected: (String) -
 
                             Log.d("xy", "$x $y")
 
-                            val month = Utils.calculateMonth(lineValues[0].x.toString().substring(2, 4).toInt())
+                            val month = Utils.calculateMonth(lineValues[0].x.toString()
+                                .substring(2, 4).toInt())
 
                             Text(
                                 text = "$x $month",

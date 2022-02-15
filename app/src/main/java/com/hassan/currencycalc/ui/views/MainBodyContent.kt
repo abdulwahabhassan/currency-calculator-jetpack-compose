@@ -42,8 +42,8 @@ fun MainBodyContent(
     //MainRateTextField
     var baseAmount by rememberSaveable { mutableStateOf("1")}
 
-    //observe live data from conversion rate as state, every time state changes as a result of new rates,
-    //recomposition ensues on every composable that uses this rates
+    //observe live data from conversion rate as state, every time state changes as a result of
+    //new rates, recomposition ensues on every composable that uses this rates
     val conversionRate by mainViewModel.conversionRate.observeAsState(ConversionResult())
 
     Column(modifier = modifier.verticalScroll(scrollState)) {
@@ -72,7 +72,8 @@ fun MainBodyContent(
                 targetCurrencySymbol,
                 modifier,
                 readOnly = false,
-                value = if (conversionRate?.result != null) String.format("%.6f", conversionRate?.result) else "",
+                value = if (conversionRate?.result != null) String
+                    .format("%.6f", conversionRate?.result) else "",
                 enabled = false,
                 onBaseAmountChanged = { }
             )

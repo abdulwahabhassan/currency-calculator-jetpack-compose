@@ -32,8 +32,8 @@ fun MainGraphSection(mainViewModel: MainViewModel, base: String, target: String)
     //get time series
     mainViewModel.getTimeSeriesRates(base, target, startDate, endDate)
 
-    //observe live data from time series rates as state, every time state changes as a result of new rates,
-    //recomposition ensues on every composable that uses this rates
+    //observe live data from time series rates as state, every time state changes as a result of
+    //new rates, recomposition ensues on every composable that uses this rates
     val timeSeriesRates by mainViewModel.timeSeriesRates.observeAsState(RatesResult())
 
     Column(

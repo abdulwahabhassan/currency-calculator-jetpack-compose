@@ -31,9 +31,6 @@ class MainViewModel @Inject constructor (
                         _conversionRate.postValue(conversionResult.data)
                     }
                 }
-                is Result.Error -> {
-                    //
-                }
             }
         }
     }
@@ -45,9 +42,6 @@ class MainViewModel @Inject constructor (
                     if (timeSeriesResult.data.success == true) {
                         _timeSeriesRates.postValue(timeSeriesResult.data)
                     }
-                }
-                is Result.Error -> {
-                    //
                 }
             }
         }

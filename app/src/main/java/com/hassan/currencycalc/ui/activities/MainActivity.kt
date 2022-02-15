@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.hassan.currencycalc.Utils
 import com.hassan.currencycalc.Utils.calculatePastDate
-import com.hassan.currencycalc.Utils.getLines
 import com.hassan.currencycalc.Utils.todayDate
 import com.hassan.currencycalc.ui.views.MainRootContent
 import com.hassan.currencycalc.viewmodels.MainViewModel
