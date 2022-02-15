@@ -37,7 +37,7 @@ fun MainGraphSection(mainViewModel: MainViewModel, base: String, target: String)
     val timeSeriesRates by mainViewModel.timeSeriesRates.observeAsState(RatesResult())
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 300.dp)
             .background(
                 color = MaterialTheme.colors.onPrimary,
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
