@@ -2,7 +2,7 @@ package com.hassan.currencycalc.viewmodels
 
 import androidx.lifecycle.*
 import com.hassan.domain.Result
-import com.hassan.domain.entities.Rates
+import com.hassan.domain.entities.RatesResult
 import com.hassan.domain.usecases.ConvertRateUseCase
 import com.hassan.domain.usecases.GetHistoricalRatesUseCase
 import com.hassan.domain.usecases.GetRatesUseCase
@@ -17,13 +17,13 @@ class MainViewModel @Inject constructor (
     private val getHistoricalRatesUseCase: GetHistoricalRatesUseCase
 ) : ViewModel() {
 
-    private val _remoteRates = MutableLiveData<Rates>()
+    private val _remoteRates = MutableLiveData<RatesResult>()
     val remoteRates = _remoteRates
 
-    private val _convertedRate = MutableLiveData<Rates>()
-    val convertedRate = _convertedRate
+    private val _targetRates = MutableLiveData<RatesResult>()
+    val targetRates = _targetRates
 
-    private val _historicalRates = MutableLiveData<Rates>()
+    private val _historicalRates = MutableLiveData<RatesResult>()
     val historicalRates = _historicalRates
 
     private val _error = MutableLiveData<String>(null)
@@ -47,7 +47,7 @@ class MainViewModel @Inject constructor (
         viewModelScope.launch {
             when (val ratesResult = convertRateUseCase.invoke(base, symbols)) {
                 is Result.Success -> {
-                    _convertedRate.postValue(ratesResult.data)
+                    _targetRates.postValue(ratesResult.data)
                 }
 
                 is Result.Error -> {

@@ -7,6 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class NetworkModule {
 
+    //lazily initialize request interceptor
     private val requestInterceptor by lazy {
         Interceptor { chain ->
             val url = chain.request()
@@ -24,12 +25,14 @@ class NetworkModule {
         }
     }
 
+    //lazily initialize http client
     private val httpClient by lazy {
         OkHttpClient.Builder()
             .addInterceptor(requestInterceptor)
             .build()
     }
 
+    //build retrofit with
     private fun getRetrofit(baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -40,6 +43,7 @@ class NetworkModule {
     }
 
 
+    //creates an implementation of rates api end points
     fun createRatesApi(baseUrl: String): RatesApi {
         return getRetrofit(baseUrl).create(RatesApi::class.java)
     }

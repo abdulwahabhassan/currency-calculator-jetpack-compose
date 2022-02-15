@@ -1,6 +1,6 @@
 package com.hassan.domain.entities
 
-data class Rates(
+data class RatesResult(
     val success: Boolean? = null,
     val timestamp: Long? = null,
     val historical: Boolean? = null,

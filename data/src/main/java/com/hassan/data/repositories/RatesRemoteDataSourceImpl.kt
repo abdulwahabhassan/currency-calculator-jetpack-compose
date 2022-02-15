@@ -1,18 +1,19 @@
 package com.hassan.data.repositories
 
 import com.hassan.data.api.RatesApi
-import com.hassan.data.mappers.RatesApiResponseMapper
+import com.hassan.data.datasource.RatesRemoteDataSource
+import com.hassan.data.mappers.RatesResponseMapper
 import com.hassan.domain.Result
-import com.hassan.domain.entities.Rates
+import com.hassan.domain.entities.RatesResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.Exception
 
 class RatesRemoteDataSourceImpl(
     private val service: RatesApi,
-    private val mapper: RatesApiResponseMapper
+    private val mapper: RatesResponseMapper
 ) : RatesRemoteDataSource {
-    override suspend fun getLatestRates(base: String): Result<Rates> =
+    override suspend fun getLatestRates(base: String): Result<RatesResult> =
         withContext(Dispatchers.IO) {
             try {
                 val response = service.getLatestRates(base)
@@ -26,7 +27,7 @@ class RatesRemoteDataSourceImpl(
             }
         }
 
-    override suspend fun convertRate(base: String, symbols: String): Result<Rates> =
+    override suspend fun convertRate(base: String, symbols: String): Result<RatesResult> =
         withContext(Dispatchers.IO) {
             try {
                 val response = service.convertRate(base = base, symbols = symbols)
@@ -40,7 +41,7 @@ class RatesRemoteDataSourceImpl(
             }
         }
 
-    override suspend fun getHistoricalRates(date: String, base: String, symbols: String): Result<Rates> =
+    override suspend fun getHistoricalRates(date: String, base: String, symbols: String): Result<RatesResult> =
         withContext(Dispatchers.IO) {
         try {
             val response = service.getHistoricalRates(date = date, base = base, symbols = symbols)

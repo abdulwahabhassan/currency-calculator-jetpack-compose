@@ -1,11 +1,11 @@
 package com.hassan.data.mappers
 
-import com.hassan.data.api.RatesApiResponse
-import com.hassan.domain.entities.Rates
+import com.hassan.data.models.RatesResponse
+import com.hassan.domain.entities.RatesResult
 
-class RatesApiResponseMapper {
-    fun toRates(response: RatesApiResponse): Rates {
-        return Rates(
+class RatesResponseMapper {
+    fun toRates(response: RatesResponse): RatesResult {
+        return RatesResult(
             response.success,
             response.timestamp,
             response.historical,

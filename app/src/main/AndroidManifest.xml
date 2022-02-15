@@ -14,12 +14,12 @@
         android:theme="@style/Theme.CurrencyCalc"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.views.ChartActivity"
+            android:name=".ui.activities.ChartActivity"
             android:exported="true">
 
         </activity>
         <activity
-            android:name=".ui.views.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.CurrencyCalc.NoActionBar">

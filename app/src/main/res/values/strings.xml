@@ -3,4 +3,14 @@
     <string name="app_name_colored">Currency Calculator<font color='red'>Hello world!</font></string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="nav_menu_icon_description">Navigation menu icon</string>
+    <string name="sign_up_button_text">Sign up</string>
+    <string name="calculator_text">Calculator</string>
+    <string name="dot_text">.</string>
+    <string name="currency_text">Currency</string>
+    <string name="compare_arrow_description">Compare arrow</string>
+    <string name="info_text">Mid-market exchange rate at 13:38 UTC</string>
+    <string name="info_icon_description">Info icon</string>
+    <string name="promotional_text">Get rate alerts straight to your email inbox</string>
+    <string name="convert_text">Convert</string>
 </resources>

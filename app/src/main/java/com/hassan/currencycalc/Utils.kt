@@ -6,18 +6,8 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.RoundRect
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hassan.domain.entities.Country
@@ -42,13 +32,13 @@ object Utils {
     }
 
     //read json file from asset and return list of countries with data of their flag and currency symbol
-   fun loadCountriesFromAsset(assets: AssetManager, jsonFileName: String): List<Country>? {
+    private fun loadCountriesFromAsset(assets: AssetManager): List<Country>? {
 
         val listOfCountries: List<Country>?
 
         try {
             //use InputStream to open the file and stream the data into it.
-            val stream = assets.open(jsonFileName)
+            val stream = assets.open("countries.json")
             //create a variable to store the size of the file.
             val size = stream.available()
             //create a buffer of the size of the file.
@@ -99,6 +89,17 @@ object Utils {
     fun todayDate(): String {
         val zoneId = ZoneId.of("Africa/Lagos")
         return LocalDate.now(zoneId).toString()
+    }
+
+    //returns a map of each country's currency code to their flag
+    fun loadMapOfCurrencySymbolToFlag(assets: AssetManager): MutableMap<String, String> {
+        //create an empty map
+        val mapOfCurrencySymbolToFlag = mutableMapOf<String, String>()
+        //load countries from asset, store their currency code and flag as a key-value pair in the map
+        loadCountriesFromAsset(assets)?.forEach {
+            mapOfCurrencySymbolToFlag[it.currency.code] = it.flag
+        }
+        return mapOfCurrencySymbolToFlag
     }
 
     //test dataPoints

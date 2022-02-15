@@ -1,8 +1,8 @@
-package com.hassan.data.api
+package com.hassan.data.models
 
 import com.google.gson.annotations.SerializedName
 
-data class RatesApiResponse (
+data class RatesResponse (
     @SerializedName("success")
     var success: Boolean?,
     @SerializedName("timestamp")

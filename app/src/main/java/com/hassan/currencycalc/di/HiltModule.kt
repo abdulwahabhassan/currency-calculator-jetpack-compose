@@ -2,15 +2,14 @@ package com.hassan.currencycalc.di
 
 import com.hassan.data.api.NetworkModule
 import com.hassan.data.api.RatesApi
-import com.hassan.data.mappers.RatesApiResponseMapper
-import com.hassan.data.repositories.RatesRemoteDataSource
+import com.hassan.data.mappers.RatesResponseMapper
+import com.hassan.data.datasource.RatesRemoteDataSource
 import com.hassan.data.repositories.RatesRemoteDataSourceImpl
 import com.hassan.data.repositories.RatesRepositoryImpl
 import com.hassan.domain.repositories.RatesRepository
 import com.hassan.domain.usecases.ConvertRateUseCase
 import com.hassan.domain.usecases.GetHistoricalRatesUseCase
 import com.hassan.domain.usecases.GetRatesUseCase
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -51,10 +50,9 @@ object RatesApiModule {
 @InstallIn(SingletonComponent::class)
 object ResponseMapperModule {
 
-
     @Provides
-    fun provideRatesResponseMapper(): RatesApiResponseMapper {
-        return RatesApiResponseMapper()
+    fun provideRatesResponseMapper(): RatesResponseMapper {
+        return RatesResponseMapper()
     }
 }
 
@@ -65,7 +63,7 @@ object RatesRemoteDataSourceModule {
     @Provides
     fun provideRatesRemoteDataSource(
         ratesApi: RatesApi,
-        mapper: RatesApiResponseMapper
+        mapper: RatesResponseMapper
     ) : RatesRemoteDataSource {
         return RatesRemoteDataSourceImpl(ratesApi, mapper)
     }
