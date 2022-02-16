@@ -2,7 +2,6 @@ package com.hassan.currencycalc.database.entities
 
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
-import com.hassan.data.models.RatesResponse
 
 //define database entity and it's access object
 @Entity
@@ -22,17 +21,17 @@ data class Rates(
 interface RatesDao {
     //get rates whose base and target match the arguments
     @Query("SELECT * FROM rates WHERE target IN (:targetList) AND base LIKE :base")
-    fun getRates(base: String, targetList: List<String>): List<Rates>
+    suspend fun getRates(base: String, targetList: List<String>): List<Rates>
 
     //insert new rates, will return SQLite row-id of the newly inserted row
     @Insert(onConflict = REPLACE)
-    fun insertRates(rates: Rates): Long
+    suspend fun insertRates(rates: Rates): Long
 
     //update specified rates params with the corresponding arguments where the base and target params
     //of rates in the database match the base and targetList arguments, will return number of rows
     //affected by this query
     @Query("UPDATE rates SET start_date = (:startDate), end_date = (:endDate), map_of_dates_to_rates = (:mapOfDatesToRates) WHERE target IN (:targetList) AND base LIKE :base")
-    fun upDateRates(base: String, targetList: List<String>, startDate: String, endDate: String, mapOfDatesToRates:Map<String, Map<String, Double>>): Int
+    suspend fun upDateRates(base: String, targetList: List<String>, startDate: String, endDate: String, mapOfDatesToRates:Map<String, Map<String, Double>>): Int
 
 
 }

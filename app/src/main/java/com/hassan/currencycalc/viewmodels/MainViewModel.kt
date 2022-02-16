@@ -1,12 +1,11 @@
 package com.hassan.currencycalc.viewmodels
 
-import android.widget.Toast
 import androidx.lifecycle.*
-import com.hassan.domain.Result
-import com.hassan.domain.entities.ConversionResult
-import com.hassan.domain.entities.RatesResult
-import com.hassan.domain.usecases.ConvertUseCase
-import com.hassan.domain.usecases.GetRatesUseCase
+import com.hassan.currencycalc.domain.Result
+import com.hassan.currencycalc.domain.entities.ConversionResult
+import com.hassan.currencycalc.domain.entities.RatesResult
+import com.hassan.currencycalc.domain.usecases.ConvertUseCase
+import com.hassan.currencycalc.domain.usecases.GetRatesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

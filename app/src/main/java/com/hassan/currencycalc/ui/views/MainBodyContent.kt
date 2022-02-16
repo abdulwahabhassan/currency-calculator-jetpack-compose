@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.hassan.currencycalc.R
 import com.hassan.currencycalc.ui.theme.RippleCustomTheme
 import com.hassan.currencycalc.viewmodels.MainViewModel
-import com.hassan.domain.entities.ConversionResult
+import com.hassan.currencycalc.domain.entities.ConversionResult
 
 @Composable
 fun MainBodyContent(

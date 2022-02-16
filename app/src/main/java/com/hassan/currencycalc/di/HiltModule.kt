@@ -1,15 +1,15 @@
 package com.hassan.currencycalc.di
 
-import com.hassan.data.api.NetworkModule
-import com.hassan.data.api.FixerApi
-import com.hassan.data.mappers.RatesResponseMapper
-import com.hassan.data.datasource.RatesRemoteDataSource
-import com.hassan.data.mappers.ConversionResponseMapper
-import com.hassan.data.repositories.RatesRemoteDataSourceImpl
-import com.hassan.data.repositories.RatesRepositoryImpl
-import com.hassan.domain.repositories.RatesRepository
-import com.hassan.domain.usecases.ConvertUseCase
-import com.hassan.domain.usecases.GetRatesUseCase
+import com.hassan.currencycalc.data.api.NetworkModule
+import com.hassan.currencycalc.data.api.FixerApi
+import com.hassan.currencycalc.data.mappers.RatesResponseMapper
+import com.hassan.currencycalc.data.datasource.RatesRemoteDataSource
+import com.hassan.currencycalc.data.mappers.ConversionResponseMapper
+import com.hassan.currencycalc.data.repositories.RatesRemoteDataSourceImpl
+import com.hassan.currencycalc.data.repositories.RatesRepositoryImpl
+import com.hassan.currencycalc.domain.repositories.RatesRepository
+import com.hassan.currencycalc.domain.usecases.ConvertUseCase
+import com.hassan.currencycalc.domain.usecases.GetRatesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

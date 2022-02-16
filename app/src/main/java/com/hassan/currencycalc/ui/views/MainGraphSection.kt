@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.hassan.currencycalc.R
 import com.hassan.currencycalc.Utils
 import com.hassan.currencycalc.viewmodels.MainViewModel
-import com.hassan.domain.entities.RatesResult
+import com.hassan.currencycalc.domain.entities.RatesResult
 
 @Composable
 fun MainGraphSection(mainViewModel: MainViewModel, base: String, target: String) {

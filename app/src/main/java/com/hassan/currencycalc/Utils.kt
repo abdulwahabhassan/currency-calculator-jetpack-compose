@@ -10,8 +10,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.hassan.domain.entities.Country
-import com.hassan.domain.entities.RatesResult
+import com.hassan.currencycalc.domain.entities.Country
+import com.hassan.currencycalc.domain.entities.RatesResult
 import com.madrapps.plot.line.DataPoint
 import java.io.ByteArrayOutputStream
 import java.io.IOException

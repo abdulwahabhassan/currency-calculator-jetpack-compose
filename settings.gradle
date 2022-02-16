@@ -8,6 +8,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "CurrencyCalc"
 include ':app'
-include ':domain'
-include ':data'
-include ':lib'
