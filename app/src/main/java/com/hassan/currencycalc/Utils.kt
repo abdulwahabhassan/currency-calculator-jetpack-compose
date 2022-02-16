@@ -22,6 +22,8 @@ import java.util.*
 
 object Utils {
 
+    val DATABASE_NAME = "currency_calc"
+
     //encode image to base64 string
     fun encodeImageToBase64String(res: Resources, imageResId: Int): String {
         val byteArrayOutputStream = ByteArrayOutputStream()

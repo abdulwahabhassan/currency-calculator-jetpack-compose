@@ -1,5 +1,6 @@
 package com.hassan.data.models
 
+
 import com.google.gson.annotations.SerializedName
 
 data class RatesResponse (

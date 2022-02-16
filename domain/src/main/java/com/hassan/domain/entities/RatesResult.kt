@@ -1,5 +1,6 @@
 package com.hassan.domain.entities
 
+
 data class RatesResult(
     val success: Boolean? = false,
     val timeSeries: Boolean? = false,
