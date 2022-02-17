@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.hassan.currencycalc.R
-import com.hassan.currencycalc.Utils
+import com.hassan.currencycalc.utilities.Helpers
 import com.hassan.currencycalc.viewmodels.MainViewModel
 import com.hassan.currencycalc.domain.entities.RatesResult
 
@@ -26,8 +26,8 @@ import com.hassan.currencycalc.domain.entities.RatesResult
 fun MainGraphSection(mainViewModel: MainViewModel, base: String, target: String) {
 
     //set initial dates
-    var startDate by rememberSaveable { mutableStateOf(Utils.calculatePastDate(30)) }
-    val endDate by rememberSaveable { mutableStateOf(Utils.todayDate()) }
+    var startDate by rememberSaveable { mutableStateOf(Helpers.calculatePastDate(30)) }
+    val endDate by rememberSaveable { mutableStateOf(Helpers.todayDate()) }
 
     //get time series
     mainViewModel.getTimeSeriesRates(base, target, startDate, endDate)
@@ -45,7 +45,7 @@ fun MainGraphSection(mainViewModel: MainViewModel, base: String, target: String)
     ) {
 
         //if list of data points is not null, plot graph
-        Utils.mapDataPoints(timeSeriesRates, target)?.let {
+        Helpers.mapDataPoints(timeSeriesRates, target)?.let {
             MainGraph(
                 line = it,
                 symbols = target,

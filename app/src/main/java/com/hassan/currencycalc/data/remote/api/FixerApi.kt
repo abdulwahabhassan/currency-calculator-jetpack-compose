@@ -1,7 +1,7 @@
-package com.hassan.currencycalc.data.api
+package com.hassan.currencycalc.data.remote.api
 
-import com.hassan.currencycalc.data.models.ConversionResponse
-import com.hassan.currencycalc.data.models.RatesResponse
+import com.hassan.currencycalc.data.models.ConversionRemote
+import com.hassan.currencycalc.data.models.RatesRemote
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -14,7 +14,7 @@ interface FixerApi {
         @Query("from") from: String,
         @Query("to") to: String,
         @Query("amount") amount: Double
-    ): Response<ConversionResponse>
+    ): Response<ConversionRemote>
 
     //get historical rates between any two dates
     @GET("timeseries")
@@ -24,5 +24,5 @@ interface FixerApi {
         @Query("start_date") startDate: String,
         @Query("end_date") endDate: String
 
-    ): Response<RatesResponse>
+    ): Response<RatesRemote>
 }

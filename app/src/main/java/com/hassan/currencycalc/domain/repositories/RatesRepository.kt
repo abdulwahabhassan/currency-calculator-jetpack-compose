@@ -9,12 +9,14 @@ interface RatesRepository {
     suspend fun convert(
         from: String,
         to: String,
-        amount: Double): Result<ConversionResult>
+        amount: Double
+    ): Result<ConversionResult>
 
     suspend fun getRates(
         base: String,
         target: String,
         startDate: String,
-        endDate: String): Result<RatesResult>
+        endDate: String
+    ): Result<RatesResult>
 
 }

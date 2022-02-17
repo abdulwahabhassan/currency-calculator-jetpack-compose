@@ -1,11 +1,18 @@
-package com.hassan.currencycalc.data.api
+package com.hassan.currencycalc.data.remote.api
 
+import com.hassan.currencycalc.BuildConfig
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Inject
 
-class NetworkModule {
+class NetworkModule @Inject constructor (
+    private val moshiConverterFactory: MoshiConverterFactory
+    ) {
 
     //lazily initialize request interceptor
     private val requestInterceptor by lazy {
@@ -13,7 +20,7 @@ class NetworkModule {
             val url = chain.request()
                 .url()
                 .newBuilder()
-                .addQueryParameter("access_key", API_ACCESS_KEY)
+                .addQueryParameter("access_key", BuildConfig.FIXER_API_ACCESS_KEY)
                 .build()
 
             val request = chain.request()
@@ -37,7 +44,7 @@ class NetworkModule {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(httpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(moshiConverterFactory)
             .build()
 
     }
@@ -48,7 +55,4 @@ class NetworkModule {
         return getRetrofit(baseUrl).create(FixerApi::class.java)
     }
 
-    companion object {
-        private const val API_ACCESS_KEY = "89abab446cef1a3b933d1eb6270057b7"
-    }
 }

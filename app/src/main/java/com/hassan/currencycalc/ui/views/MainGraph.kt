@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hassan.currencycalc.Utils
+import com.hassan.currencycalc.utilities.Helpers
 import com.madrapps.plot.line.DataPoint
 import com.madrapps.plot.line.LineGraph
 import com.madrapps.plot.line.LinePlot
@@ -58,7 +58,7 @@ fun MainGraph(line: List<DataPoint>, symbols: String, onDateSelected: (String) -
                 if(!clicked30Days) {
                     clicked30Days = !clicked30Days
                     clicked90Days = !clicked90Days
-                    onDateSelected(Utils.calculatePastDate(30))
+                    onDateSelected(Helpers.calculatePastDate(30))
                 }
             },
                 shape = RoundedCornerShape(6.dp)
@@ -86,7 +86,7 @@ fun MainGraph(line: List<DataPoint>, symbols: String, onDateSelected: (String) -
                 if(!clicked90Days) {
                     clicked90Days = !clicked90Days
                     clicked30Days = !clicked30Days
-                    onDateSelected(Utils.calculatePastDate(90))
+                    onDateSelected(Helpers.calculatePastDate(90))
                 }
             },
                 shape = RoundedCornerShape(6.dp)
@@ -144,7 +144,7 @@ fun MainGraph(line: List<DataPoint>, symbols: String, onDateSelected: (String) -
 
                             Log.d("xy", "$x $y")
 
-                            val month = Utils.calculateMonth(lineValues[0].x.toString()
+                            val month = Helpers.calculateMonth(lineValues[0].x.toString()
                                 .substring(2, 4).toInt())
 
                             Text(
@@ -220,7 +220,7 @@ fun MainGraph(line: List<DataPoint>, symbols: String, onDateSelected: (String) -
                                     })
 
                                 if(space) {
-                                    val month = Utils.calculateMonth(
+                                    val month = Helpers.calculateMonth(
                                         it.x.toInt().toString().substring(2, 4).toInt()
                                     )
                                     //log

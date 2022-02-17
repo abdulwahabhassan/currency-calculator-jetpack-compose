@@ -3,7 +3,7 @@ package com.hassan.currencycalc.data.models
 
 import com.google.gson.annotations.SerializedName
 
-data class RatesResponse (
+data class RatesRemote (
     @SerializedName("success")
     var success: Boolean?,
     @SerializedName("timeseries")
@@ -17,4 +17,3 @@ data class RatesResponse (
     @SerializedName("rates")
     var rates: Map<String, Map<String, Double>>?
         )
-

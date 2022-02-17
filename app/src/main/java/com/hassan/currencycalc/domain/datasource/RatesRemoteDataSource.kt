@@ -1,4 +1,4 @@
-package com.hassan.currencycalc.data.datasource
+package com.hassan.currencycalc.domain.datasource
 
 import com.hassan.currencycalc.domain.Result
 import com.hassan.currencycalc.domain.entities.ConversionResult

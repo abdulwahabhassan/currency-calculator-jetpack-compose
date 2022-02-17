@@ -1,20 +1,21 @@
-package com.hassan.currencycalc.data.repositories
+package com.hassan.currencycalc.data.remote.datasource
 
-import com.hassan.currencycalc.data.api.FixerApi
-import com.hassan.currencycalc.data.datasource.RatesRemoteDataSource
-import com.hassan.currencycalc.data.mappers.ConversionResponseMapper
-import com.hassan.currencycalc.data.mappers.RatesResponseMapper
+import com.hassan.currencycalc.data.remote.api.FixerApi
+import com.hassan.currencycalc.domain.datasource.RatesRemoteDataSource
+import com.hassan.currencycalc.data.remote.mappers.ConversionRemoteMapper
+import com.hassan.currencycalc.data.remote.mappers.RatesRemoteMapper
 import com.hassan.currencycalc.domain.Result
 import com.hassan.currencycalc.domain.entities.ConversionResult
 import com.hassan.currencycalc.domain.entities.RatesResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 import kotlin.Exception
 
-class RatesRemoteDataSourceImpl(
+class RatesRemoteDataSourceImpl @Inject constructor(
     private val service: FixerApi,
-    private val ratesResponseMapper: RatesResponseMapper,
-    private val conversionResponseMapper: ConversionResponseMapper
+    private val ratesRemoteMapper: RatesRemoteMapper,
+    private val conversionRemoteMapper: ConversionRemoteMapper
 ) : RatesRemoteDataSource {
 
     override suspend fun convert(from: String, to: String, amount: Double):
@@ -22,11 +23,15 @@ class RatesRemoteDataSourceImpl(
         try {
             val response = service.convert(from = from, to = to, amount = amount)
             if (response.isSuccessful) {
-                return@withContext Result.Success(conversionResponseMapper.toConversionResult(response.body()!!))
+                return@withContext Result.Success(
+                    conversionRemoteMapper.mapToEntity(response.body()!!)
+                )
             } else {
-                return@withContext Result.Error(Exception(response.message()))
+                return@withContext Result.Error(
+                    Exception(response.message())
+                )
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             return@withContext Result.Error(e)
         }
     }
@@ -37,11 +42,15 @@ class RatesRemoteDataSourceImpl(
             try {
                 val response = service.getRates(base, listOf(target), startDate, endDate)
                 if (response.isSuccessful) {
-                    return@withContext Result.Success(ratesResponseMapper.toRatesResult(response.body()!!))
+                    return@withContext Result.Success(
+                        ratesRemoteMapper.mapToEntity(response.body()!!)
+                    )
                 } else {
-                    return@withContext Result.Error(Exception(response.message()))
+                    return@withContext Result.Error(
+                        Exception(response.message())
+                    )
                 }
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 return@withContext Result.Error(e)
             }
         }

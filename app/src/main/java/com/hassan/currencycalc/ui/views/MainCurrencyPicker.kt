@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
-import com.hassan.currencycalc.Utils
+import com.hassan.currencycalc.utilities.Helpers
 
 @Composable
 fun MainCurrencyPicker(
@@ -60,7 +60,7 @@ fun MainCurrencyPicker(
                 if (base64String != null) {
                     Icon(
                         modifier = Modifier.size(20.dp),
-                        bitmap = Utils.getFlagImageBitMap(base64String),
+                        bitmap = Helpers.getFlagImageBitMap(base64String),
                         contentDescription = "Flag",
                         tint = Color.Unspecified
                     )
@@ -111,7 +111,7 @@ fun MainCurrencyPicker(
                 ) {
                     Icon(
                         modifier = Modifier.size(20.dp),
-                        bitmap = Utils.getFlagImageBitMap(item.value),
+                        bitmap = Helpers.getFlagImageBitMap(item.value),
                         contentDescription ="Flag",
                         tint = Color.Unspecified
                     )

@@ -1,4 +1,4 @@
-package com.hassan.currencycalc
+package com.hassan.currencycalc.utilities
 
 import android.annotation.SuppressLint
 import android.content.res.AssetManager
@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken
 import com.hassan.currencycalc.domain.entities.Country
 import com.hassan.currencycalc.domain.entities.RatesResult
 import com.madrapps.plot.line.DataPoint
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.text.DecimalFormat
@@ -20,9 +21,9 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
 
-object Utils {
+object Helpers {
 
-    val DATABASE_NAME = "currency_calc"
+    const val DATABASE_NAME = "currency_calc"
 
     //encode image to base64 string
     fun encodeImageToBase64String(res: Resources, imageResId: Int): String {
@@ -31,7 +32,6 @@ object Utils {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
         val imageBytes: ByteArray = byteArrayOutputStream.toByteArray()
         val imageString: String = Base64.getEncoder().encodeToString(imageBytes)
-        Log.d("encodeImage", imageString)
         return imageString
     }
 
@@ -115,7 +115,6 @@ object Utils {
                 val dateValue = DecimalFormat("0000")
                     .format(rate.key.replace(Regex("\\W"), "")
                         .takeLast(6).toFloat()).toFloat()
-                Log.d("yes", dateValue.toString())
                 val rateValue = rate.value[target]?.toFloat() ?: 0f
                 DataPoint(dateValue, rateValue)
             }
