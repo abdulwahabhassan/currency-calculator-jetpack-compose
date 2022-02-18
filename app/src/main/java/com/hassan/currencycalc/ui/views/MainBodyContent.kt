@@ -42,9 +42,9 @@ fun MainBodyContent(
     //MainRateTextField
     var baseAmount by rememberSaveable { mutableStateOf("1")}
 
-    //observe live data from conversion rate as state, every time state changes as a result of
-    //new rates, recomposition ensues on every composable that uses this rates
-    val conversionRate by mainViewModel.conversionRate.observeAsState(ConversionResult())
+    //collect conversion rate state flow as state, every time state changes as a result of
+    //new rates, recomposition ensues on every composable that uses this conversion rate
+    val conversionRate by mainViewModel.conversionRate.collectAsState()
 
     Column(modifier = modifier.verticalScroll(scrollState)) {
         Column(modifier = Modifier.padding(24.dp, 0.dp)) {
@@ -72,8 +72,8 @@ fun MainBodyContent(
                 targetCurrencySymbol,
                 modifier,
                 readOnly = false,
-                value = if (conversionRate?.success != false) String
-                    .format("%.6f", conversionRate?.result) else "",
+                value = if (conversionRate.success != false) String
+                    .format("%.6f", conversionRate.result) else "",
                 enabled = false,
                 onBaseAmountChanged = { }
             )
@@ -136,11 +136,11 @@ fun MainBodyContent(
                         Toast.makeText(context, "Calculating..", Toast.LENGTH_SHORT).show()
 
                         //if conversion gives an error, toast the error message
-                        if(conversionRate?.error != null) {
+                        if(conversionRate.error != null) {
                             Toast.makeText(
                                 context,
-                                "${conversionRate?.error?.info}",
-                                Toast.LENGTH_SHORT
+                                "${conversionRate.error?.info}",
+                                Toast.LENGTH_LONG
                             ).show()
                         }
 

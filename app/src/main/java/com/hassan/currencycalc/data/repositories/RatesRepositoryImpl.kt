@@ -11,6 +11,7 @@ import com.hassan.currencycalc.domain.entities.ConversionResult
 import com.hassan.currencycalc.domain.entities.Error
 import com.hassan.currencycalc.domain.entities.RatesResult
 import com.hassan.currencycalc.domain.repositories.RatesRepository
+import timber.log.Timber
 import javax.inject.Inject
 
 class RatesRepositoryImpl @Inject constructor(

@@ -1,21 +1,21 @@
 package com.hassan.currencycalc.data.models
 
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
 data class RatesRemote (
-    @SerializedName("success")
+    @Json(name = "success")
     var success: Boolean?,
-    @SerializedName("timeseries")
+    @Json(name = "timeseries")
     var timeSeries: Boolean?,
-    @SerializedName("startDate")
+    @Json(name = "startDate")
     var startDate: String?,
-    @SerializedName("endDate")
+    @Json(name = "endDate")
     var endDate: String?,
-    @SerializedName("base")
+    @Json(name = "base")
     var base: String?,
-    @SerializedName("rates")
+    @Json(name = "rates")
     var rates: Map<String, Map<String, Double>>?,
-    @SerializedName("error")
+    @Json(name = "error")
     var errorRemote: ErrorRemote?
         )

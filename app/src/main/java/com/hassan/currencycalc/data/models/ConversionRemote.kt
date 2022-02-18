@@ -1,12 +1,12 @@
 package com.hassan.currencycalc.data.models
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
 data class ConversionRemote(
-    @SerializedName("success")
+    @Json(name = "success")
     val success: Boolean?,
-    @SerializedName("result")
+    @Json(name = "result")
     val result: Double?,
-    @SerializedName("error")
-    var errorRemote: ErrorRemote?
+    @Json(name = "error")
+    val errorRemote: ErrorRemote?
 )

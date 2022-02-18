@@ -1,11 +1,11 @@
 package com.hassan.currencycalc.data.models
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
 data class ErrorRemote (
-    @SerializedName("code")
+    @Json(name = "code")
     val code: Int?,
-    @SerializedName("info")
+    @Json(name = "info")
     val info: String?
 )
 

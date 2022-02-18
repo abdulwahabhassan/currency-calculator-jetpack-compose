@@ -9,6 +9,7 @@ import com.hassan.currencycalc.domain.entities.ConversionResult
 import com.hassan.currencycalc.domain.entities.RatesResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.Exception
 
@@ -27,10 +28,12 @@ class RatesRemoteDataSourceImpl @Inject constructor(
                 //map the body of the response to the corresponding domain entity and wrap it in a
                     //successful result
             if (response.isSuccessful) {
+                Timber.d("success ${response.body()!!}")
                 return@withContext Result.Success(
                     conversionRemoteMapper.mapToEntity(response.body()!!)
                 )
             } else {
+                Timber.d("unsuccessful ${response.body()!!}")
                 //if network response was unsuccessful, retrieve the message of the response,
                     //initialize an exception wrapped in an error result
                 return@withContext Result.Error(
@@ -53,10 +56,12 @@ class RatesRemoteDataSourceImpl @Inject constructor(
                 //map the body of the response to the corresponding domain entity and wrap it in a
                 //successful result
                 if (response.isSuccessful) {
+                    Timber.d("success ${response.body()!!}")
                     return@withContext Result.Success(
                         ratesRemoteMapper.mapToEntity(response.body()!!)
                     )
                 } else {
+                    Timber.d("unsuccessful ${response.body()!!}")
                     //if network response was unsuccessful, retrieve the message of the response,
                     //initialize an exception wrapped in an error result
                     return@withContext Result.Error(

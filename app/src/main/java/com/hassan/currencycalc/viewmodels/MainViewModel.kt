@@ -8,6 +8,8 @@ import com.hassan.currencycalc.domain.entities.RatesResult
 import com.hassan.currencycalc.domain.usecases.ConvertUseCase
 import com.hassan.currencycalc.domain.usecases.GetRatesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,11 +19,13 @@ class MainViewModel @Inject constructor (
     private val convertUseCase: ConvertUseCase
 ) : ViewModel() {
 
-    private val _timeSeriesRates = MutableLiveData<RatesResult>()
-    val timeSeriesRates = _timeSeriesRates
+    //create a collectible public immutable state flow with a backing private mutable property which
+    //the ui can collect from
+    private val _timeSeriesRates: MutableStateFlow<RatesResult> = MutableStateFlow(RatesResult())
+    val timeSeriesRates: StateFlow<RatesResult> = _timeSeriesRates
 
-    private val _conversionRate = MutableLiveData<ConversionResult>()
-    val conversionRate = _conversionRate
+    private val _conversionRate: MutableStateFlow<ConversionResult> = MutableStateFlow(ConversionResult())
+    val conversionRate: StateFlow<ConversionResult> = _conversionRate
 
     fun convert(base: String, target: String, amount: Double) {
         viewModelScope.launch {
@@ -29,16 +33,16 @@ class MainViewModel @Inject constructor (
                 //conversion result could be successful or erroneous depending on success or
                     //failure of the http network request and whether an exception was thrown when
                         //trying to perform the request or not
-                is Result.Success -> { //if successful, retrieve the data
-                    _conversionRate.postValue(conversionResult.data)
+                is Result.Success -> { //if successful, set as new value
+                    _conversionRate.value = conversionResult.data
                 }
                 is Result.Error -> { //if erroneous, initialize a conversionResult that describes
                     //the error message of the failed http network request or the exception that was
                     //while trying to perform the network request
-                    _conversionRate.postValue(
-                        ConversionResult(error = Error(
+                    _conversionRate.value = ConversionResult(
+                        error = Error(
                             902,
-                            conversionResult.exception.localizedMessage)
+                            conversionResult.exception.localizedMessage
                         )
                     )
                 }
@@ -54,19 +58,18 @@ class MainViewModel @Inject constructor (
                 //trying to perform the request or not
                 is Result.Success -> {//if successful, retrieve the data
                     if (timeSeriesResult.data.success == true) {
-                        _timeSeriesRates.postValue(timeSeriesResult.data)
+                        _timeSeriesRates.value = timeSeriesResult.data
                     }
                 }
                 is Result.Error -> { //if erroneous, initialize a conversionResult that describes
                     //the error message of the failed http network request or the exception that was
                     //while trying to perform the network request
-                    _timeSeriesRates.postValue(
-                        RatesResult(error = Error(
+                    _timeSeriesRates.value = RatesResult(
+                        error = Error(
                             902,
-                            timeSeriesResult.exception.localizedMessage)
+                            timeSeriesResult.exception.localizedMessage
                         )
                     )
-
                 }
             }
         }

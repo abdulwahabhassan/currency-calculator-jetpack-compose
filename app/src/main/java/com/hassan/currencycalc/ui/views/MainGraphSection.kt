@@ -6,12 +6,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -32,12 +29,14 @@ fun MainGraphSection(mainViewModel: MainViewModel, base: String, target: String)
     //get time series
     mainViewModel.getTimeSeriesRates(base, target, startDate, endDate)
 
-    //observe live data from time series rates as state, every time state changes as a result of
+    //collect time series rates as state, every time state changes as a result of
     //new rates, recomposition ensues on every composable that uses this rates
-    val timeSeriesRates by mainViewModel.timeSeriesRates.observeAsState(RatesResult())
+    val timeSeriesRates by mainViewModel.timeSeriesRates.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 300.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 300.dp)
             .background(
                 color = MaterialTheme.colors.onPrimary,
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)

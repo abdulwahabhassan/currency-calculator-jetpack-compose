@@ -44,7 +44,7 @@ class NetworkModule @Inject constructor (
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(httpClient)
-            .addConverterFactory(moshiConverterFactory)
+            .addConverterFactory(moshiConverterFactory) //replaced gson with moshi
             .build()
 
     }
