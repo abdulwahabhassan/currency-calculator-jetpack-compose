@@ -7,6 +7,7 @@ import com.hassan.currencycalc.domain.Result
 import com.hassan.currencycalc.domain.entities.RatesResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 class RatesLocalDataSourceImpl @Inject constructor(
@@ -14,13 +15,14 @@ class RatesLocalDataSourceImpl @Inject constructor(
     private val ratesLocalMapper: RatesLocalMapper
 ): RatesLocalDataSource {
 
-    override suspend fun getRates(base: String, targetList: List<String>):
-            Result<List<RatesResult>> = withContext(Dispatchers.IO) {
-            return@withContext Result.Success(
-                ratesLocalMapper.mapToEntitiesList(
-                    ratesLocalDao.getRates(base, targetList)
-                )
-            )
+    override suspend fun getRates(base: String, target: String):
+        Result<RatesResult> = withContext(Dispatchers.IO) {
+            return@withContext try {
+                Result.Success(ratesLocalMapper.mapToEntity(ratesLocalDao.getRates(base, target)))
+            } catch(e: Exception) {
+                Timber.d(e.localizedMessage)
+                Result.Error(e)
+            }
     }
 
 }

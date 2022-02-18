@@ -44,15 +44,15 @@ object MoshiModule {
 
     }
 
-    @Singleton
-    @Provides
-    fun providesTargetListAdapter(
-        moshi: Moshi
-    ): JsonAdapter<List<String>> {
-        //create new type literal
-        val listType: Type = object : TypeToken<List<String>>() {}.type
-        //create jsonAdapter for new type
-        return moshi.adapter(listType)
-
-    }
+//    @Singleton
+//    @Provides
+//    fun providesTargetListAdapter(
+//        moshi: Moshi
+//    ): JsonAdapter<List<String>> {
+//        //create new type literal
+//        val listType: Type = object : TypeToken<List<String>>() {}.type
+//        //create jsonAdapter for new type
+//        return moshi.adapter(listType)
+//
+//    }
 }

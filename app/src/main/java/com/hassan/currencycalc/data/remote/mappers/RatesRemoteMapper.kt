@@ -1,5 +1,6 @@
 package com.hassan.currencycalc.data.remote.mappers
 
+import com.hassan.currencycalc.data.models.ErrorRemote
 import com.hassan.currencycalc.utilities.BaseMapper
 import com.hassan.currencycalc.data.models.RatesRemote
 import com.hassan.currencycalc.domain.entities.RatesResult
@@ -24,7 +25,8 @@ class RatesRemoteMapper: BaseMapper<RatesRemote, RatesResult> {
             startDate = type.startDate,
             endDate = type.endDate,
             base = type.base,
-            rates = type.rates
+            rates = type.rates,
+            errorRemote = ErrorRemote(type.error?.code, type.error?.info)
         )
     }
 }

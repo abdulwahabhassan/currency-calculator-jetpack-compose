@@ -172,5 +172,4 @@ data class TargetRates(
     @SerializedName("ZMK" ) var ZMK : Double?,
     @SerializedName("ZMW" ) var ZMW : Double?,
     @SerializedName("ZWL" ) var ZWL : Double?
-
 )

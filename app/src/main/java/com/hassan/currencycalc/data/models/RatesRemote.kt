@@ -15,5 +15,7 @@ data class RatesRemote (
     @SerializedName("base")
     var base: String?,
     @SerializedName("rates")
-    var rates: Map<String, Map<String, Double>>?
+    var rates: Map<String, Map<String, Double>>?,
+    @SerializedName("error")
+    var errorRemote: ErrorRemote?
         )

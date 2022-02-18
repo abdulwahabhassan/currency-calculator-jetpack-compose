@@ -6,6 +6,6 @@ import com.hassan.currencycalc.domain.entities.RatesResult
 interface RatesLocalDataSource {
     suspend fun getRates(
         base: String,
-        targetList: List<String>
-    ): Result<List<RatesResult>>
+        target: String
+    ): Result<RatesResult>
 }

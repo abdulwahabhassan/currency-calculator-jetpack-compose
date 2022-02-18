@@ -27,9 +27,10 @@ fun MainRateTextField(
     enabled: Boolean,
     onBaseAmountChanged: (newBaseAmount: String) -> Unit
 ) {
-
+    //rememberable field value even when orientation and configuration changes
     var fieldValue by rememberSaveable { mutableStateOf(value) }
 
+    //input text field
     TextField(
         value = value,
         readOnly = readOnly,

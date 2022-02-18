@@ -72,7 +72,7 @@ fun MainBodyContent(
                 targetCurrencySymbol,
                 modifier,
                 readOnly = false,
-                value = if (conversionRate?.result != null) String
+                value = if (conversionRate?.success != false) String
                     .format("%.6f", conversionRate?.result) else "",
                 enabled = false,
                 onBaseAmountChanged = { }
@@ -132,7 +132,18 @@ fun MainBodyContent(
                             targetCurrencySymbol,
                             baseAmount.toDouble()
                         )
+
                         Toast.makeText(context, "Calculating..", Toast.LENGTH_SHORT).show()
+
+                        //if conversion gives an error, toast the error message
+                        if(conversionRate?.error != null) {
+                            Toast.makeText(
+                                context,
+                                "${conversionRate?.error?.info}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
                     } else {
                         Toast.makeText(context, "Enter an amount", Toast.LENGTH_SHORT).show()
                     }
@@ -170,5 +181,4 @@ fun MainBodyContent(
     }
 
 }
-
 

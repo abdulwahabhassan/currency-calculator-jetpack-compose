@@ -25,13 +25,15 @@ class RatesLocalMapper: BaseMapper<RatesLocal, RatesResult> {
            endDate = type.endDate,
            base = type.base,
            mapOfDatesToRates = type.rates,
-           target = type.rates?.flatMap { date ->
-               //transform each rate to it's key
-               date.value.map { rate ->
-                   Timber.d("$rate.key")
-                   rate.key
-               }
-           }
+           target = type.rates?.entries?.first()?.value?.entries?.first()?.key //currency symbol
        )
     }
 }
+
+//type.rates?flatMap { date ->
+//               //transform each rate to it's key
+//               date.value.map { rate ->
+//                   Timber.d("$rate.key")
+//                   rate.key
+//               }
+//           }

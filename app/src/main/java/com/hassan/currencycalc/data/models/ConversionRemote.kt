@@ -6,5 +6,7 @@ data class ConversionRemote(
     @SerializedName("success")
     val success: Boolean?,
     @SerializedName("result")
-    val result: Double?
+    val result: Double?,
+    @SerializedName("error")
+    var errorRemote: ErrorRemote?
 )

@@ -7,5 +7,6 @@ data class RatesResult(
     val startDate: String? = null,
     val endDate: String? = null,
     val base: String? = null,
-    val rates: Map<String, Map<String, Double>>? = null
+    val rates: Map<String, Map<String, Double>>? = null,
+    val error: Error? = null
 )

@@ -1,5 +1,6 @@
 package com.hassan.currencycalc.di
 
+import android.net.ConnectivityManager
 import com.hassan.currencycalc.data.repositories.RatesRepositoryImpl
 import com.hassan.currencycalc.domain.datasource.RatesLocalDataSource
 import com.hassan.currencycalc.domain.datasource.RatesRemoteDataSource
@@ -18,10 +19,11 @@ object RepositoryModule {
     @Provides
     fun providesRatesRepository(
         ratesRemoteDataSource: RatesRemoteDataSource,
-        ratesLocalDataSource: RatesLocalDataSource
+        ratesLocalDataSource: RatesLocalDataSource,
+        connectivityManager: ConnectivityManager
     ): RatesRepository {
         return RatesRepositoryImpl(
-            ratesRemoteDataSource, ratesLocalDataSource
+            ratesRemoteDataSource, ratesLocalDataSource, connectivityManager
         )
     }
 

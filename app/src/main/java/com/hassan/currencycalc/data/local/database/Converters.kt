@@ -17,7 +17,7 @@ import javax.inject.Inject
 class Converters  @Inject constructor(
     var moshi: Moshi,
     private val mapAdapter: JsonAdapter<Map<String, Map<String, Double>>>,
-    private val listAdapter: JsonAdapter<List<String>>
+//    private val listAdapter: JsonAdapter<List<String>>
     ){
 
     //convert seriesRates(String) to Map<String, Map<String, Double>>
@@ -34,18 +34,18 @@ class Converters  @Inject constructor(
         return mapAdapter.toJson(seriesRates)
     }
 
-    //convert target(String) to List<String>
-    @TypeConverter
-    fun fromTargetToList(target: String): List<String>? {
-        Timber.d("${listAdapter.fromJson(target)}")
-        return listAdapter.fromJson(target)
-    }
-
-    //convert target List<String> to String
-    @TypeConverter
-    fun fromTargetToString(target: List<String>): String {
-        Timber.d(listAdapter.toJson(target))
-        return listAdapter.toJson(target)
-    }
+//    //convert target(String) to List<String>
+//    @TypeConverter
+//    fun fromTargetToList(target: String): List<String>? {
+//        Timber.d("${listAdapter.fromJson(target)}")
+//        return listAdapter.fromJson(target)
+//    }
+//
+//    //convert target List<String> to String
+//    @TypeConverter
+//    fun fromTargetToString(target: List<String>): String {
+//        Timber.d(listAdapter.toJson(target))
+//        return listAdapter.toJson(target)
+//    }
 
 }

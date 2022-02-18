@@ -13,5 +13,5 @@ data class RatesLocal(
     @ColumnInfo(name = "end_date") val endDate: String? = null,
     @ColumnInfo val base: String? = null,
     @ColumnInfo(name = "map_of_dates_to_rates") val mapOfDatesToRates: Map<String, Map<String, Double>>? = null,
-    @ColumnInfo val target: List<String>? = arrayListOf()
+    @ColumnInfo val target: String? = null
 )
